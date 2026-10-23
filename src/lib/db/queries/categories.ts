@@ -254,22 +254,52 @@ export async function updateCategory(
     .update(updates)
     .eq("id", id)
     .select("*")
-    .single();
+    .maybeSingle();
 
-  if (error || !data) {
-    throw new Error(error?.message || "Gagal memperbarui kategori di Supabase");
+  if (!error && data) {
+    return {
+      id: data.id,
+      slug: data.slug,
+      name: data.name,
+      icon: data.icon,
+      sortOrder: Number(data.sort_order) || 0,
+      isActive: Boolean(data.is_active),
+      createdAt: data.created_at,
+      updatedAt: data.updated_at,
+    };
   }
 
-  return {
-    id: data.id,
-    slug: data.slug,
-    name: data.name,
-    icon: data.icon,
-    sortOrder: Number(data.sort_order) || 0,
-    isActive: Boolean(data.is_active),
-    createdAt: data.created_at,
-    updatedAt: data.updated_at,
+  // Jika belum ada di Supabase, lakukan upsert
+  const fullPayload = {
+    id: existing.id,
+    slug: updates.slug || existing.slug,
+    name: updates.name || existing.name,
+    icon: updates.icon || existing.icon,
+    sort_order: updates.sort_order !== undefined ? updates.sort_order : existing.sortOrder,
+    is_active: updates.is_active !== undefined ? updates.is_active : existing.isActive,
+    updated_at: new Date().toISOString(),
   };
+
+  const { data: upsertData, error: upsertError } = await supabaseAdmin
+    .from("categories")
+    .upsert(fullPayload)
+    .select("*")
+    .maybeSingle();
+
+  if (!upsertError && upsertData) {
+    return {
+      id: upsertData.id,
+      slug: upsertData.slug,
+      name: upsertData.name,
+      icon: upsertData.icon,
+      sortOrder: Number(upsertData.sort_order) || 0,
+      isActive: Boolean(upsertData.is_active),
+      createdAt: upsertData.created_at,
+      updatedAt: upsertData.updated_at,
+    };
+  }
+
+  throw new Error(upsertError?.message || error?.message || "Gagal memperbarui kategori di Supabase");
 }
 
 export async function deleteCategory(id: string): Promise<{ success: boolean; error?: string }> {

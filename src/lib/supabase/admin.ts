@@ -38,15 +38,28 @@ const fetchWithCircuitBreaker = async (url: any, options: any = {}) => {
     }
   }
 
+  // PENTING: Untuk kunci modern Supabase (sb_secret_ / sb_publishable_),
+  // PostgREST menolak Authorization: Bearer <sb_...> dengan error 'Expected 3 parts in JWT'.
+  // Hapus Authorization Bearer non-JWT agar PostgREST menggunakan header apikey langsung.
+  const headers = new Headers(options.headers || {});
+  const auth = headers.get("authorization");
+  if (auth && (auth.includes("Bearer sb_secret_") || auth.includes("Bearer sb_publishable_"))) {
+    headers.delete("authorization");
+  }
+
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 600);
+  const timeoutId = setTimeout(() => controller.abort(), 4000);
 
   if (options?.signal) {
     options.signal.addEventListener("abort", () => controller.abort());
   }
 
   try {
-    return await fetch(url, { ...options, signal: controller.signal });
+    const res = await fetch(url, { ...options, headers, signal: controller.signal });
+    if (res.status < 500) {
+      isCircuitOpen = false;
+    }
+    return res;
   } catch (err: any) {
     isCircuitOpen = true;
     circuitOpenedAt = Date.now();

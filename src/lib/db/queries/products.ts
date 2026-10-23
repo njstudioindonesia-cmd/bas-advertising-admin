@@ -354,18 +354,51 @@ export async function updateProduct(
   if (input.sold !== undefined) updates.sold = input.sold;
   if (input.sortOrder !== undefined) updates.sort_order = input.sortOrder;
 
+  // 1. Coba update record di Supabase
   const { data, error } = await supabaseAdmin
     .from("products")
     .update(updates)
     .eq("id", id)
     .select("*, categories(name, slug)")
-    .single();
+    .maybeSingle();
 
-  if (error || !data) {
-    throw new Error(error?.message || "Gagal memperbarui produk di Supabase");
+  if (!error && data) {
+    return mapRowToProduct(data);
   }
 
-  return mapRowToProduct(data);
+  // 2. Jika baris belum ada di Supabase, lakukan UPSERT lengkap!
+  const fullPayload = {
+    id: existing.id,
+    slug: updates.slug || existing.slug,
+    category_id: updates.category_id || existing.categoryId || "cat-spanduk-banner",
+    name: updates.name || existing.name,
+    description: updates.description !== undefined ? updates.description : existing.description,
+    price: updates.price !== undefined ? updates.price : existing.priceNumber,
+    compare_at_price: updates.compare_at_price !== undefined ? updates.compare_at_price : existing.compareAtPrice,
+    unit: updates.unit || existing.unit,
+    image_url: updates.image_url || existing.imageUrl,
+    gallery: updates.gallery || existing.gallery,
+    specs: updates.specs || existing.specs,
+    is_best_seller: updates.is_best_seller !== undefined ? updates.is_best_seller : existing.isBestSeller,
+    is_active: updates.is_active !== undefined ? updates.is_active : existing.isActive,
+    rating: updates.rating || existing.rating,
+    sold: updates.sold || existing.sold,
+    sort_order: updates.sort_order !== undefined ? updates.sort_order : existing.sortOrder,
+    created_at: existing.createdAt || now,
+    updated_at: now,
+  };
+
+  const { data: upsertData, error: upsertError } = await supabaseAdmin
+    .from("products")
+    .upsert(fullPayload)
+    .select("*, categories(name, slug)")
+    .maybeSingle();
+
+  if (!upsertError && upsertData) {
+    return mapRowToProduct(upsertData);
+  }
+
+  throw new Error(upsertError?.message || error?.message || "Gagal memperbarui produk di Supabase");
 }
 
 export async function deleteProduct(id: string, softDelete = true): Promise<boolean> {

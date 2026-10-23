@@ -166,23 +166,56 @@ export async function updateBanner(
     .update(updates)
     .eq("id", id)
     .select("*")
-    .single();
+    .maybeSingle();
 
-  if (error || !data) {
-    throw new Error(error?.message || "Gagal memperbarui banner di Supabase");
+  if (!error && data) {
+    return {
+      id: data.id,
+      title: data.title,
+      subtitle: data.subtitle,
+      imageUrl: data.image_url,
+      ctaLabel: data.cta_label,
+      ctaHref: data.cta_href,
+      sortOrder: Number(data.sort_order) || 0,
+      isActive: Boolean(data.is_active),
+      createdAt: data.created_at,
+    };
   }
 
-  return {
-    id: data.id,
-    title: data.title,
-    subtitle: data.subtitle,
-    imageUrl: data.image_url,
-    ctaLabel: data.cta_label,
-    ctaHref: data.cta_href,
-    sortOrder: Number(data.sort_order) || 0,
-    isActive: Boolean(data.is_active),
-    createdAt: data.created_at,
+  // Jika belum ada di Supabase, lakukan upsert
+  const fullPayload = {
+    id: existing.id,
+    title: updates.title || existing.title,
+    subtitle: updates.subtitle !== undefined ? updates.subtitle : existing.subtitle,
+    image_url: updates.image_url || existing.imageUrl,
+    cta_label: updates.cta_label !== undefined ? updates.cta_label : existing.ctaLabel,
+    cta_href: updates.cta_href !== undefined ? updates.cta_href : existing.ctaHref,
+    sort_order: updates.sort_order !== undefined ? updates.sort_order : existing.sortOrder,
+    is_active: updates.is_active !== undefined ? updates.is_active : existing.isActive,
+    updated_at: new Date().toISOString(),
   };
+
+  const { data: upsertData, error: upsertError } = await supabaseAdmin
+    .from("banners")
+    .upsert(fullPayload)
+    .select("*")
+    .maybeSingle();
+
+  if (!upsertError && upsertData) {
+    return {
+      id: upsertData.id,
+      title: upsertData.title,
+      subtitle: upsertData.subtitle,
+      imageUrl: upsertData.image_url,
+      ctaLabel: upsertData.cta_label,
+      ctaHref: upsertData.cta_href,
+      sortOrder: Number(upsertData.sort_order) || 0,
+      isActive: Boolean(upsertData.is_active),
+      createdAt: upsertData.created_at,
+    };
+  }
+
+  throw new Error(upsertError?.message || error?.message || "Gagal memperbarui banner di Supabase");
 }
 
 export async function deleteBanner(id: string): Promise<boolean> {
