@@ -107,7 +107,11 @@ export async function DELETE(
       return NextResponse.json({ success: false, error: "Produk tidak ditemukan" }, { status: 404 });
     }
 
-    await deleteProduct(id, !permanent);
+    const targetId = existing.id || id;
+    const ok = await deleteProduct(targetId, !permanent);
+    if (!ok) {
+      return NextResponse.json({ success: false, error: "Gagal menghapus produk dari database" }, { status: 500 });
+    }
 
     // Jika dihapus permanen, bersihkan gambar utama & galeri dari Supabase Storage
     if (permanent) {
@@ -122,15 +126,15 @@ export async function DELETE(
       actor: "admin",
       action: permanent ? "HARD_DELETE" : "SOFT_DELETE",
       entity: "products",
-      entityId: id,
+      entityId: targetId,
       diff: { name: existing.name },
     });
 
-    revalidateEntity("products", ["/", "/produk", `/produk/${id}`]);
+    revalidateEntity("products", ["/", "/produk", `/produk/${targetId}`, `/produk/${existing.slug}`]);
 
     return NextResponse.json({
       success: true,
-      message: permanent ? "Produk dihapus secara permanen" : "Produk dinonaktifkan",
+      message: permanent ? "Produk dihapus secara permanen dari database" : "Produk dinonaktifkan dari katalog",
     });
   } catch (error: any) {
     return NextResponse.json({ success: false, error: error.message || "Gagal menghapus produk" }, { status: 500 });

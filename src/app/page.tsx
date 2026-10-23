@@ -737,9 +737,9 @@ export default function UrangDalamAdminPortal() {
   const handleExecuteDelete = async (id: string, name: string, permanent: boolean) => {
     // Optimistic UI update
     if (permanent) {
-      setProducts((prev) => prev.filter((p) => p.id !== id));
+      setProducts((prev) => prev.filter((p) => p.id !== id && p.slug !== id));
     } else {
-      setProducts((prev) => prev.map((p) => p.id === id ? { ...p, isActive: false } : p));
+      setProducts((prev) => prev.map((p) => (p.id === id || p.slug === id) ? { ...p, isActive: false } : p));
     }
     setDeleteConfirmProd(null);
 
@@ -768,7 +768,7 @@ export default function UrangDalamAdminPortal() {
   };
 
   const handleDeleteProduct = (id: string, name: string) => {
-    const target = products.find((p) => p.id === id);
+    const target = products.find((p) => p.id === id || p.slug === id);
     if (target) {
       setDeleteConfirmProd(target);
     } else {
@@ -777,6 +777,7 @@ export default function UrangDalamAdminPortal() {
   };
 
   const handleDuplicateProduct = async (p: any) => {
+    if (!confirm(`Duplikasi produk '${p.name || p.title}'?`)) return;
     const payload = {
       name: `${p.name || p.title} (Salinan)`,
       categoryId: p.categoryId,
@@ -1392,7 +1393,7 @@ export default function UrangDalamAdminPortal() {
           </form>
 
           <div className="mt-6 text-center pt-4 border-t border-gray-100">
-            <a href={process.env.NEXT_PUBLIC_STORE_URL || "https://bas-advertising.vercel.app"} className="text-xs text-gray-400 hover:text-gray-600 inline-flex items-center gap-1 font-medium">
+            <a href={process.env.NEXT_PUBLIC_STORE_URL || "https://cetakinc.vercel.app"} className="text-xs text-gray-400 hover:text-gray-600 inline-flex items-center gap-1 font-medium">
               <ArrowLeft size={13} /> Kembali ke Web Toko Utama
             </a>
           </div>
@@ -1468,7 +1469,7 @@ export default function UrangDalamAdminPortal() {
             <RefreshCw size={16} className={loading ? "animate-spin" : ""} />
           </button>
           <a
-            href={process.env.NEXT_PUBLIC_STORE_URL || "https://bas-advertising.vercel.app"}
+            href={process.env.NEXT_PUBLIC_STORE_URL || "https://cetakinc.vercel.app"}
             target="_blank"
             rel="noopener noreferrer"
             className="px-3 py-1.5 bg-white/10 hover:bg-white/20 text-gray-200 text-xs font-semibold rounded-xl inline-flex items-center gap-1.5 transition-colors"
@@ -3973,6 +3974,22 @@ export default function UrangDalamAdminPortal() {
             <div className="space-y-2 pt-2">
               <button
                 type="button"
+                onClick={() => handleExecuteDelete(deleteConfirmProd.id, deleteConfirmProd.name || deleteConfirmProd.title, true)}
+                className="w-full p-3.5 bg-red-600 hover:bg-red-700 text-white rounded-2xl text-left flex items-start gap-3 transition-all cursor-pointer shadow-md hover:shadow-lg"
+              >
+                <div className="p-1.5 bg-white/20 text-white rounded-xl mt-0.5 shrink-0">
+                  <Trash2 size={18} />
+                </div>
+                <div>
+                  <div className="font-extrabold text-xs sm:text-sm text-white">Hapus Permanen dari Database</div>
+                  <div className="text-[10px] sm:text-[11px] text-red-100 leading-tight mt-0.5">
+                    Hapus produk sepenuhnya dari sistem database Supabase. Produk langsung hilang dari admin dan web utama.
+                  </div>
+                </div>
+              </button>
+
+              <button
+                type="button"
                 onClick={() => handleExecuteDelete(deleteConfirmProd.id, deleteConfirmProd.name || deleteConfirmProd.title, false)}
                 className="w-full p-3 bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-2xl text-left flex items-start gap-3 transition-all cursor-pointer"
               >
@@ -3980,25 +3997,9 @@ export default function UrangDalamAdminPortal() {
                   <AlertCircle size={16} />
                 </div>
                 <div>
-                  <div className="font-bold text-xs text-amber-900">Nonaktifkan Sementara (Rekomendasi)</div>
+                  <div className="font-bold text-xs text-amber-900">Sembunyikan Saja (Nonaktifkan)</div>
                   <div className="text-[10px] text-amber-700 leading-tight mt-0.5">
-                    Produk disembunyikan dari katalog publik dan homepage, tetapi data tetap tersimpan di admin dan bisa diaktifkan kembali kapan saja.
-                  </div>
-                </div>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => handleExecuteDelete(deleteConfirmProd.id, deleteConfirmProd.name || deleteConfirmProd.title, true)}
-                className="w-full p-3 bg-red-50 hover:bg-red-100 border border-red-200 rounded-2xl text-left flex items-start gap-3 transition-all cursor-pointer"
-              >
-                <div className="p-1.5 bg-red-100 text-red-700 rounded-xl mt-0.5 shrink-0">
-                  <Trash2 size={16} />
-                </div>
-                <div>
-                  <div className="font-bold text-xs text-red-900">Hapus Permanen dari Database</div>
-                  <div className="text-[10px] text-red-700 leading-tight mt-0.5">
-                    Hapus produk sepenuhnya dari sistem database SQLite dan JSON. Data tidak dapat dipulihkan.
+                    Produk disembunyikan dari web utama pembeli, tetapi data tetap tersimpan di tabel admin.
                   </div>
                 </div>
               </button>

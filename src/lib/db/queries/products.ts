@@ -402,18 +402,23 @@ export async function updateProduct(
 }
 
 export async function deleteProduct(id: string, softDelete = true): Promise<boolean> {
-  if (softDelete) {
+  try {
+    if (softDelete) {
+      const { error } = await supabaseAdmin
+        .from("products")
+        .update({ is_active: false, updated_at: new Date().toISOString() })
+        .or(`id.eq.${id},slug.eq.${id}`);
+      return !error;
+    }
+
     const { error } = await supabaseAdmin
       .from("products")
-      .update({ is_active: false, updated_at: new Date().toISOString() })
-      .eq("id", id);
+      .delete()
+      .or(`id.eq.${id},slug.eq.${id}`);
+
     return !error;
+  } catch (err) {
+    console.error("deleteProduct error:", err);
+    return false;
   }
-
-  const { error } = await supabaseAdmin
-    .from("products")
-    .delete()
-    .eq("id", id);
-
-  return !error;
 }
