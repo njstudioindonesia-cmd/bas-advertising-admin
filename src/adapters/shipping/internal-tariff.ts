@@ -1,6 +1,6 @@
 import { ShippingProvider, ShippingQuoteInput, ShippingQuoteResult } from "./types";
 import { getActiveRoutingProvider } from "../routing";
-import { getShippingTariffByHub } from "@/modules/delivery";
+import { getShippingTariffByHub } from "@/modules/tariffs";
 
 export class InternalTariffShippingProvider implements ShippingProvider {
   id = "internal-tariff";

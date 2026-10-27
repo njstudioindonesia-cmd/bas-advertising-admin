@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth/guard";
-import { getShippingTariffs, upsertShippingTariff } from "@/modules/delivery";
+import { getShippingTariffs, upsertShippingTariff } from "@/modules/tariffs";
 import { logAudit } from "@/lib/db/queries/audit";
 
 export async function GET(request: Request) {
