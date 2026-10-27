@@ -59,7 +59,7 @@ export default function UrangDalamAdminPortal() {
   // Active Tab
   const [activeTab, setActiveTab] = useState<
     "dashboard" | "products" | "categories" | "banners" | "portfolio" | "settings" | "orders" | "hubs" | "tariffs" | "payments" | "backup" | "account"
-  >("dashboard");
+  >("products");
 
   // Hubs Management (Fase 2 Blueprint V2)
   const [hubsList, setHubsList] = useState<any[]>([]);
@@ -1488,22 +1488,9 @@ export default function UrangDalamAdminPortal() {
       {/* NAVIGATION TABS RAIL */}
       <nav className="bg-white border-b border-gray-200 px-4 sm:px-8 py-2 overflow-x-auto no-scrollbar flex gap-2">
         {[
-          { id: "dashboard", label: "Ringkasan", icon: LayoutDashboard },
           { id: "products", label: `Katalog Produk (${products.length})`, icon: Package },
           { id: "categories", label: `Kategori (${categories.length})`, icon: Layers },
-          { id: "orders", label: `Pesanan (${orders.length})`, icon: ShoppingCart },
-          {
-            id: "payments",
-            label: `Verifikasi Bayar${
-              paymentsList.filter((p) => p.status === "PENDING").length > 0
-                ? ` (${paymentsList.filter((p) => p.status === "PENDING").length})`
-                : ""
-            }`,
-            icon: ShieldCheck,
-          },
-          { id: "hubs", label: `Titik Workshop (${hubsList.length || 2})`, icon: Building2 },
-          { id: "tariffs", label: "Tarif & Ongkir", icon: Truck },
-          { id: "banners", label: "Banner Promo", icon: ImageIcon },
+          { id: "banners", label: `Banner Promo (${banners.length})`, icon: ImageIcon },
           { id: "settings", label: "Pengaturan & WA", icon: Settings },
           { id: "backup", label: "Backup & Reset", icon: Database },
           { id: "account", label: "Keamanan Akun", icon: KeyRound },
