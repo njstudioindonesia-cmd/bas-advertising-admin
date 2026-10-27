@@ -4,7 +4,7 @@ export const DEFAULT_SETTINGS: Record<string, any> = {
   "site.name": "Cetak.inc",
   "site.tagline": "Modern Printing & Advertising Studio",
   "site.description": "Premium printing & advertising studio delivering precision and perfection.",
-  "contact.whatsapp": "6281234567890",
+  "contact.whatsapp": "6282172725267",
   "contact.email": "hello@basadvertising.com",
   "contact.address": "Jl. Percetakan Modern No.88, Kota Padang, Sumatera Barat",
   "contact.hours": "Senin - Sabtu: 08:30 - 21:00 WIB",
