@@ -5,6 +5,7 @@ import { requireAdmin } from "@/lib/auth/guard";
 import { revalidateEntity } from "@/lib/cache-tags";
 import { logAudit } from "@/lib/db/queries/audit";
 import { deleteStorageFile, deleteStorageFiles } from "@/lib/storage-helper";
+import { triggerRemoteStoreRevalidation } from "@/lib/revalidate-remote";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -83,6 +84,7 @@ export async function PUT(
     });
 
     revalidateEntity("products", ["/", "/produk", `/produk/${id}`, `/produk/${updated.slug}`]);
+    triggerRemoteStoreRevalidation();
 
     return NextResponse.json({ success: true, message: "Produk berhasil diperbarui", data: updated });
   } catch (error: any) {
@@ -131,6 +133,7 @@ export async function DELETE(
     });
 
     revalidateEntity("products", ["/", "/produk", `/produk/${targetId}`, `/produk/${existing.slug}`]);
+    triggerRemoteStoreRevalidation();
 
     return NextResponse.json({
       success: true,

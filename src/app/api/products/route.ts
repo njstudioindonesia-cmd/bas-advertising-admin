@@ -4,6 +4,7 @@ import { ProductInputSchema } from "@/lib/validators";
 import { requireAdmin } from "@/lib/auth/guard";
 import { revalidateEntity } from "@/lib/cache-tags";
 import { logAudit } from "@/lib/db/queries/audit";
+import { triggerRemoteStoreRevalidation } from "@/lib/revalidate-remote";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -78,6 +79,7 @@ export async function POST(request: Request) {
     });
 
     revalidateEntity("products", ["/", "/produk", `/produk/${created.id}`]);
+    triggerRemoteStoreRevalidation();
 
     return NextResponse.json(
       { success: true, message: "Produk berhasil ditambahkan", data: created },
