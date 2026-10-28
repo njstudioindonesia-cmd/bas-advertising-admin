@@ -263,15 +263,25 @@ export default function UrangDalamAdminPortal() {
   const refreshAllData = async () => {
     setLoading(true);
     try {
+      const safeFetch = async (url: string, fallback: any = { success: false, data: [] }) => {
+        try {
+          const res = await adminFetch(url, { cache: "no-store" });
+          if (!res.ok) return fallback;
+          return await res.json();
+        } catch {
+          return fallback;
+        }
+      };
+
       const [pRes, cRes, bRes, sRes, oRes, hRes, tarRes, payRes] = await Promise.all([
-        adminFetch("/api/products?includeInactive=true", { cache: "no-store" }).then((r) => r.json()),
-        adminFetch("/api/categories?includeInactive=true", { cache: "no-store" }).then((r) => r.json()),
-        adminFetch("/api/banners?includeInactive=true", { cache: "no-store" }).then((r) => r.json()),
-        adminFetch("/api/settings", { cache: "no-store" }).then((r) => r.json()),
-        adminFetch("/api/orders", { cache: "no-store" }).then((r) => r.json()),
-        adminFetch("/api/admin/hubs", { cache: "no-store" }).then((r) => r.json()).catch(() => ({ success: false })),
-        adminFetch("/api/admin/tariffs", { cache: "no-store" }).then((r) => r.json()).catch(() => ({ success: false })),
-        adminFetch("/api/admin/payments", { cache: "no-store" }).then((r) => r.json()).catch(() => ({ success: false })),
+        safeFetch("/api/products?includeInactive=true"),
+        safeFetch("/api/categories?includeInactive=true"),
+        safeFetch("/api/banners?includeInactive=true"),
+        safeFetch("/api/settings", { success: false, data: {} }),
+        safeFetch("/api/orders"),
+        safeFetch("/api/admin/hubs"),
+        safeFetch("/api/admin/tariffs"),
+        safeFetch("/api/admin/payments"),
       ]);
 
       if (pRes.success) setProducts(pRes.data);
