@@ -1505,9 +1505,8 @@ export default function UrangDalamAdminPortal() {
           { id: "products", label: "Katalog Produk", badge: products.length, icon: Package },
           { id: "categories", label: "Kategori", badge: categories.length, icon: Layers },
           { id: "banners", label: "Banner Promo", badge: banners.length, icon: ImageIcon },
-          { id: "orders", label: "Pesanan", badge: orders.length, icon: ShoppingCart },
           { id: "settings", label: "Pengaturan & WA", icon: Settings },
-          { id: "dashboard", label: "Ringkasan", icon: LayoutDashboard },
+          { id: "dashboard", label: "Ringkasan Toko", icon: LayoutDashboard },
           { id: "backup", label: "Backup & Data", icon: Database },
           { id: "account", label: "Keamanan Akun", icon: KeyRound },
         ].map((tab) => {
@@ -1543,8 +1542,8 @@ export default function UrangDalamAdminPortal() {
           { id: "products", label: "Produk", icon: Package, badge: products.length },
           { id: "categories", label: "Kategori", icon: Layers, badge: categories.length },
           { id: "banners", label: "Banner", icon: ImageIcon, badge: banners.length },
-          { id: "orders", label: "Pesanan", icon: ShoppingCart, badge: orders.length },
           { id: "settings", label: "Pengaturan", icon: Settings },
+          { id: "dashboard", label: "Ringkasan", icon: LayoutDashboard },
         ].map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -1594,7 +1593,20 @@ export default function UrangDalamAdminPortal() {
                   {products.length}
                 </div>
                 <div className="text-[10px] text-gray-400 mt-1">
-                  {products.filter((p) => p.isActive).length} Produk Aktif Publik
+                  Katalog Terdaftar di Database
+                </div>
+              </div>
+
+              <div className="bg-white p-5 rounded-3xl border border-gray-100 shadow-2xs flex flex-col justify-between">
+                <div className="flex items-center justify-between text-gray-400 mb-2">
+                  <span className="text-xs font-bold uppercase tracking-wider">Produk Aktif</span>
+                  <CheckCircle2 size={20} className="text-emerald-500" />
+                </div>
+                <div className="text-2xl sm:text-3xl font-black text-emerald-600">
+                  {products.filter((p) => p.isActive).length}
+                </div>
+                <div className="text-[10px] text-gray-400 mt-1">
+                  Tampil & Siap Dipesan Publik
                 </div>
               </div>
 
@@ -1607,38 +1619,25 @@ export default function UrangDalamAdminPortal() {
                   {categories.length}
                 </div>
                 <div className="text-[10px] text-gray-400 mt-1">
-                  8 Kelompok Branding & Merchandise
+                  Kelompok Branding & Merchandise
                 </div>
               </div>
 
               <div className="bg-white p-5 rounded-3xl border border-gray-100 shadow-2xs flex flex-col justify-between">
                 <div className="flex items-center justify-between text-gray-400 mb-2">
-                  <span className="text-xs font-bold uppercase tracking-wider">Pesanan Masuk</span>
-                  <ShoppingCart size={20} className="text-emerald-500" />
+                  <span className="text-xs font-bold uppercase tracking-wider">Banner Promo</span>
+                  <ImageIcon size={20} className="text-[#F97316]" />
                 </div>
-                <div className="text-2xl sm:text-3xl font-black text-[#0B1E36]">
-                  {orders.length}
-                </div>
-                <div className="text-[10px] text-gray-400 mt-1">
-                  {orders.filter((o) => o.status === "BARU").length} Pesanan Baru Menunggu
-                </div>
-              </div>
-
-              <div className="bg-white p-5 rounded-3xl border border-gray-100 shadow-2xs flex flex-col justify-between">
-                <div className="flex items-center justify-between text-gray-400 mb-2">
-                  <span className="text-xs font-bold uppercase tracking-wider">Nilai Transaksi</span>
-                  <TrendingUp size={20} className="text-[#F97316]" />
-                </div>
-                <div className="text-xl sm:text-2xl font-black text-[#F97316] truncate">
-                  Rp {orders.reduce((sum, o) => sum + (o.subtotal || 0), 0).toLocaleString("id-ID")}
+                <div className="text-2xl sm:text-3xl font-black text-[#F97316]">
+                  {banners.length}
                 </div>
                 <div className="text-[10px] text-gray-400 mt-1">
-                  Akumulasi Nilai Pesanan Terdata
+                  Slider Promo di Beranda
                 </div>
               </div>
             </div>
 
-            {/* Quick Actions & Recent Orders */}
+            {/* Quick Actions & Recent Catalog Products */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               {/* Quick Actions */}
               <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-2xs space-y-3">
@@ -1646,67 +1645,78 @@ export default function UrangDalamAdminPortal() {
                 <div className="space-y-2">
                   <button
                     onClick={openAddProductModal}
-                    className="w-full p-3 bg-orange-50 hover:bg-orange-100 text-[#F97316] font-bold rounded-2xl text-xs flex items-center gap-2 transition-colors"
+                    className="w-full p-3 bg-orange-50 hover:bg-orange-100 text-[#F97316] font-bold rounded-2xl text-xs flex items-center gap-2 transition-colors cursor-pointer"
                   >
                     <Plus size={16} /> Tambah Produk Baru
                   </button>
                   <button
-                    onClick={() => setActiveTab("orders")}
-                    className="w-full p-3 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold rounded-2xl text-xs flex items-center gap-2 transition-colors"
+                    onClick={() => setActiveTab("banners")}
+                    className="w-full p-3 bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold rounded-2xl text-xs flex items-center gap-2 transition-colors cursor-pointer"
                   >
-                    <ShoppingCart size={16} /> Kelola Pesanan WhatsApp
+                    <ImageIcon size={16} /> Atur Banner Promo Beranda
                   </button>
                   <button
                     onClick={() => setActiveTab("settings")}
-                    className="w-full p-3 bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold rounded-2xl text-xs flex items-center gap-2 transition-colors"
+                    className="w-full p-3 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold rounded-2xl text-xs flex items-center gap-2 transition-colors cursor-pointer"
                   >
-                    <Settings size={16} /> Ganti Nomor WhatsApp Toko
+                    <Phone size={16} /> Ganti Nomor WhatsApp Pemesanan
                   </button>
                   <button
                     onClick={handleDownloadBackup}
-                    className="w-full p-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-2xl text-xs flex items-center gap-2 transition-colors"
+                    className="w-full p-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-2xl text-xs flex items-center gap-2 transition-colors cursor-pointer"
                   >
                     <Download size={16} /> Download Backup Database
                   </button>
                 </div>
               </div>
 
-              {/* Recent Orders List */}
+              {/* Recent Products Added */}
               <div className="lg:col-span-2 bg-white p-6 rounded-3xl border border-gray-100 shadow-2xs">
                 <div className="flex items-center justify-between mb-4">
-                  <h2 className="font-extrabold text-sm text-[#0B1E36]">Pesanan Terbaru</h2>
+                  <h2 className="font-extrabold text-sm text-[#0B1E36]">Produk Terbaru di Katalog</h2>
                   <button
-                    onClick={() => setActiveTab("orders")}
-                    className="text-xs text-[#F97316] font-bold hover:underline"
+                    onClick={() => setActiveTab("products")}
+                    className="text-xs text-[#F97316] font-bold hover:underline cursor-pointer"
                   >
-                    Lihat Semua ({orders.length})
+                    Lihat Semua ({products.length})
                   </button>
                 </div>
 
-                {orders.length === 0 ? (
-                  <p className="text-xs text-gray-400 py-8 text-center">Belum ada pesanan masuk.</p>
+                {products.length === 0 ? (
+                  <p className="text-xs text-gray-400 py-8 text-center">Belum ada produk di katalog.</p>
                 ) : (
                   <div className="divide-y divide-gray-100">
-                    {orders.slice(0, 5).map((ord) => (
-                      <div key={ord.id} className="py-3 flex items-center justify-between gap-4">
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <span className="font-extrabold text-xs text-gray-900">{ord.code}</span>
-                            <span className="text-[10px] bg-blue-50 text-blue-600 font-bold px-2 py-0.5 rounded-full">
-                              {ord.status}
-                            </span>
+                    {products.slice(0, 5).map((p) => (
+                      <div key={p.id} className="py-3 flex items-center justify-between gap-4">
+                        <div className="flex items-center gap-3 min-w-0">
+                          {p.images && p.images[0] ? (
+                            <img
+                              src={p.images[0]}
+                              alt={p.name}
+                              className="w-10 h-10 rounded-xl object-cover border border-gray-100 shrink-0"
+                            />
+                          ) : (
+                            <div className="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center text-gray-400 shrink-0">
+                              <Package size={18} />
+                            </div>
+                          )}
+                          <div className="truncate">
+                            <div className="font-bold text-xs text-gray-900 truncate">{p.name}</div>
+                            <div className="text-[10px] text-gray-400 mt-0.5">
+                              {categories.find((c) => c.id === p.categoryId)?.name || "Kategori"} • {p.isActive ? "Aktif" : "Nonaktif"}
+                            </div>
                           </div>
-                          <p className="text-xs text-gray-600 mt-0.5">
-                            {ord.customerName} ({ord.customerPhone}) • {ord.deliveryMethod === "kirim" ? "Kirim" : "Ambil di Toko"}
-                          </p>
                         </div>
-                        <div className="text-right">
+                        <div className="text-right shrink-0">
                           <span className="text-xs font-black text-[#F97316]">
-                            Rp {Number(ord.subtotal).toLocaleString("id-ID")}
+                            Rp {Number(p.basePrice || 0).toLocaleString("id-ID")}
                           </span>
-                          <span className="block text-[10px] text-gray-400">
-                            {new Date(ord.createdAt).toLocaleDateString("id-ID")}
-                          </span>
+                          <button
+                            onClick={() => openEditProductModal(p)}
+                            className="block text-[10px] text-blue-600 font-bold hover:underline mt-0.5 cursor-pointer"
+                          >
+                            Edit Produk
+                          </button>
                         </div>
                       </div>
                     ))}
@@ -2151,265 +2161,7 @@ export default function UrangDalamAdminPortal() {
           </div>
         )}
 
-        {/* ========================================================= */}
-        {/* TAB 4: PESANAN ADMIN */}
-        {/* ========================================================= */}
-        {activeTab === "orders" && (
-          <div className="space-y-4">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-white p-4 rounded-3xl border border-gray-100 shadow-2xs">
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-bold text-gray-500">Filter Status:</span>
-                <select
-                  value={orderStatusFilter}
-                  onChange={(e) => setOrderStatusFilter(e.target.value)}
-                  className="px-3 py-1.5 bg-gray-50 border border-gray-200 rounded-xl text-xs font-semibold"
-                >
-                  <option value="Semua">Semua Status</option>
-                  <option value="BARU">BARU</option>
-                  <option value="DIPROSES">DIPROSES</option>
-                  <option value="SIAP">SIAP</option>
-                  <option value="SELESAI">SELESAI</option>
-                  <option value="BATAL">BATAL</option>
-                </select>
-              </div>
 
-              <div className="flex gap-2">
-                <button
-                  onClick={exportOrdersToCsv}
-                  className="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs inline-flex items-center gap-1.5 shadow-sm"
-                >
-                  <FileSpreadsheet size={14} /> Ekspor Excel / CSV
-                </button>
-              </div>
-            </div>
-
-            {/* DESKTOP ORDERS TABLE (Hidden on Mobile) */}
-            <div className="hidden md:block bg-white rounded-3xl border border-gray-200/70 shadow-xs overflow-hidden">
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs">
-                  <thead className="bg-gray-50/80 text-gray-500 font-semibold uppercase text-[10px] border-b border-gray-100">
-                    <tr>
-                      <th className="p-3.5">Kode Pesanan</th>
-                      <th className="p-3.5">Tanggal</th>
-                      <th className="p-3.5">Pelanggan</th>
-                      <th className="p-3.5">Metode & Bayar</th>
-                      <th className="p-3.5">Subtotal</th>
-                      <th className="p-3.5">Status</th>
-                      <th className="p-3.5 text-right">Aksi</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-100">
-                    {filteredOrders.length === 0 ? (
-                      <tr>
-                        <td colSpan={7} className="p-12 text-center text-gray-400">
-                          <ShoppingCart size={32} className="mx-auto mb-2 text-gray-300" />
-                          Tidak ada pesanan yang sesuai filter.
-                        </td>
-                      </tr>
-                    ) : (
-                      filteredOrders.map((o) => (
-                        <tr key={o.id} className="hover:bg-slate-50/70 transition-colors">
-                          <td className="p-3.5 font-bold text-gray-900 font-mono">{o.code}</td>
-                          <td className="p-3.5 text-gray-500">
-                            {new Date(o.createdAt).toLocaleString("id-ID", {
-                              day: "numeric",
-                              month: "short",
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })}
-                          </td>
-                          <td className="p-3.5">
-                            <div className="font-semibold text-gray-900">{o.customerName}</div>
-                            <div className="text-[11px] text-gray-500">{o.customerPhone}</div>
-                          </td>
-                          <td className="p-3.5">
-                            <div>{o.deliveryMethod === "kirim" ? "🚚 Kirim Alamat" : "🏬 Ambil Workshop"}</div>
-                            <div className="text-[10px] text-gray-400">{o.paymentMethod}</div>
-                            <div className="mt-1 flex items-center gap-1">
-                              <Building2 size={11} className="text-[#F97316] shrink-0" />
-                              <select
-                                value={o.hub_id || (o.address?.toLowerCase().includes("lubuk buaya") ? "00000000-0000-0000-0000-000000000002" : "00000000-0000-0000-0000-000000000001")}
-                                onChange={(e) => handleAssignHubToOrder(o.id, e.target.value)}
-                                className="text-[9px] font-bold bg-orange-50 text-[#F97316] border border-orange-200 rounded px-1 py-0.5 cursor-pointer"
-                                title="Ubah Alokasi Workshop Hub untuk pesanan ini"
-                              >
-                                <option value="00000000-0000-0000-0000-000000000001">Hub Pusat Padang</option>
-                                <option value="00000000-0000-0000-0000-000000000002">Hub Lubuk Buaya</option>
-                              </select>
-                            </div>
-                          </td>
-                          <td className="p-3.5 font-extrabold text-[#F97316]">
-                            Rp {Number(o.subtotal).toLocaleString("id-ID")}
-                          </td>
-                          <td className="p-3.5">
-                            <select
-                              value={o.status}
-                              onChange={(e) => handleUpdateOrderStatus(o.id, e.target.value)}
-                              className={`px-2.5 py-1 rounded-full text-[10px] font-extrabold border transition-all cursor-pointer ${
-                                o.status === "BARU"
-                                  ? "bg-blue-50 text-blue-600 border-blue-200"
-                                  : o.status === "DIPROSES"
-                                  ? "bg-amber-50 text-amber-600 border-amber-200"
-                                  : o.status === "SIAP"
-                                  ? "bg-purple-50 text-purple-600 border-purple-200"
-                                  : o.status === "DIKIRIM" || o.status === "SHIPPED"
-                                  ? "bg-violet-100 text-violet-800 border-violet-300 ring-2 ring-violet-200 font-black animate-pulse"
-                                  : o.status === "SELESAI"
-                                  ? "bg-emerald-50 text-emerald-600 border-emerald-200"
-                                  : "bg-red-50 text-red-600 border-red-200"
-                              }`}
-                            >
-                              <option value="BARU">BARU</option>
-                              <option value="DIPROSES">DIPROSES</option>
-                              <option value="SIAP">SIAP</option>
-                              <option value="DIKIRIM">DIKIRIM (Kurir)</option>
-                              <option value="SELESAI">SELESAI</option>
-                              <option value="BATAL">BATAL</option>
-                            </select>
-
-                            {(o.status === "DIKIRIM" || o.status === "SHIPPED" || o.courier) && (
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  setDispatchModalOrder(o);
-                                  if (o.courier) {
-                                    setDispatchForm({
-                                      name: o.courier.name || "Budi Santoso",
-                                      phone: o.courier.phone || "082283995544",
-                                      plate: o.courier.plate || "Honda Vario (BA 4821 QA)",
-                                      eta: o.courier.eta || "20 Menit",
-                                      notes: o.courier.notes || "Kurir Toko Cetak.inc sedang meluncur membawa pesanan Anda",
-                                    });
-                                  }
-                                }}
-                                className="flex items-center gap-1 text-[9px] text-violet-700 hover:text-violet-900 mt-1 font-bold bg-violet-50 hover:bg-violet-100 px-2 py-0.5 rounded-md border border-violet-200 transition-all text-left cursor-pointer"
-                                title="Klik untuk edit data kurir"
-                              >
-                                <Bike size={11} className="shrink-0" />
-                                <span className="truncate max-w-[120px]">
-                                  {o.courier?.name || "Kurir OTW"} ({o.courier?.plate || "Motor"})
-                                </span>
-                              </button>
-                            )}
-                          </td>
-                          <td className="p-3.5 text-right">
-                            <div className="flex items-center justify-end gap-1.5">
-                              <a
-                                href={`/lacak?code=${o.code}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="p-1.5 bg-orange-50 hover:bg-orange-100 text-[#F97316] rounded-lg text-xs transition-colors"
-                                title="Buka Live Tracking Peta Customer"
-                              >
-                                <MapPin size={14} />
-                              </a>
-                              <a
-                                href={`https://wa.me/${String(o.customerPhone).replace(/[^0-9]/g, "")}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="p-1.5 bg-green-50 hover:bg-green-100 text-green-600 rounded-lg text-xs transition-colors"
-                                title="Chat Pelanggan di WhatsApp"
-                              >
-                                <Phone size={14} />
-                              </a>
-                              <button
-                                onClick={() => setSelectedOrder(o)}
-                                className="px-2.5 py-1 bg-gray-100 hover:bg-gray-200 rounded-lg text-xs font-bold transition-colors cursor-pointer"
-                              >
-                                Rincian
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
-            {/* MOBILE ORDERS CARDS (Shown on Mobile) */}
-            <div className="block md:hidden space-y-3">
-              {filteredOrders.length === 0 ? (
-                <div className="bg-white rounded-2xl p-8 text-center text-gray-400 border border-gray-200/70 shadow-xs">
-                  <ShoppingCart size={32} className="mx-auto mb-2 text-gray-300" />
-                  Tidak ada pesanan yang sesuai filter.
-                </div>
-              ) : (
-                filteredOrders.map((o) => (
-                  <div key={o.id} className="bg-white rounded-2xl p-4 border border-gray-200/70 shadow-xs space-y-3">
-                    <div className="flex items-center justify-between">
-                      <span className="font-extrabold text-xs text-slate-900 bg-gray-100 px-2.5 py-1 rounded-lg font-mono">
-                        {o.code}
-                      </span>
-                      <select
-                        value={o.status}
-                        onChange={(e) => handleUpdateOrderStatus(o.id, e.target.value)}
-                        className={`px-2.5 py-1 rounded-full text-[10px] font-extrabold border transition-all cursor-pointer ${
-                          o.status === "BARU"
-                            ? "bg-blue-50 text-blue-600 border-blue-200"
-                            : o.status === "DIPROSES"
-                            ? "bg-amber-50 text-amber-600 border-amber-200"
-                            : o.status === "SIAP"
-                            ? "bg-purple-50 text-purple-600 border-purple-200"
-                            : o.status === "DIKIRIM" || o.status === "SHIPPED"
-                            ? "bg-violet-100 text-violet-800 border-violet-300 ring-1 ring-violet-300 font-black animate-pulse"
-                            : o.status === "SELESAI"
-                            ? "bg-emerald-50 text-emerald-600 border-emerald-200"
-                            : "bg-red-50 text-red-600 border-red-200"
-                        }`}
-                      >
-                        <option value="BARU">BARU</option>
-                        <option value="DIPROSES">DIPROSES</option>
-                        <option value="SIAP">SIAP</option>
-                        <option value="DIKIRIM">DIKIRIM</option>
-                        <option value="SELESAI">SELESAI</option>
-                        <option value="BATAL">BATAL</option>
-                      </select>
-                    </div>
-
-                    <div className="flex items-start justify-between gap-2">
-                      <div>
-                        <div className="font-bold text-sm text-gray-900">{o.customerName}</div>
-                        <div className="text-[11px] text-gray-500 mt-0.5">{o.customerPhone}</div>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-xs font-bold text-orange-600">Rp {Number(o.subtotal).toLocaleString("id-ID")}</div>
-                        <div className="text-[10px] text-gray-400 mt-0.5">
-                          {new Date(o.createdAt).toLocaleDateString("id-ID", { day: "numeric", month: "short" })}
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="text-[11px] text-gray-500 bg-gray-50 p-2.5 rounded-xl flex items-center justify-between">
-                      <span>{o.deliveryMethod === "kirim" ? "🚚 Kirim Alamat" : "🏬 Ambil Workshop"}</span>
-                      <span className="text-[10px] text-gray-400">{o.paymentMethod}</span>
-                    </div>
-
-                    <div className="flex items-center justify-end gap-2 pt-1 border-t border-gray-100">
-                      {o.customerPhone && (
-                        <a
-                          href={`https://wa.me/${String(o.customerPhone).replace(/[^0-9]/g, "")}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-xl text-xs font-bold inline-flex items-center gap-1 border border-emerald-200/60"
-                        >
-                          <Phone size={13} /> Chat WA
-                        </a>
-                      )}
-                      <button
-                        onClick={() => setSelectedOrder(o)}
-                        className="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl text-xs font-bold"
-                      >
-                        Rincian
-                      </button>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
-        )}
 
         {/* ========================================================= */}
         {/* TAB: BANNER PROMO */}
