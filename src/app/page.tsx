@@ -1444,65 +1444,71 @@ export default function UrangDalamAdminPortal() {
       )}
 
       {/* TOP ADMIN HEADER */}
-      <header className="bg-[#0B1E36] text-white sticky top-0 z-40 border-b border-white/10 px-4 sm:px-8 py-3 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="relative w-9 h-9 rounded-xl bg-white p-1 border border-white/20 shadow-sm flex items-center justify-center shrink-0">
+      <header className="bg-slate-900/95 text-white sticky top-0 z-40 border-b border-slate-800/80 backdrop-blur-md px-3 sm:px-6 py-2.5 flex items-center justify-between shadow-xs">
+        <div className="flex items-center gap-2.5 sm:gap-3">
+          <div className="relative w-9 h-9 rounded-xl bg-gradient-to-br from-slate-800 to-slate-900 p-1.5 border border-slate-700/80 shadow-inner flex items-center justify-center shrink-0">
             <Image
               src="/logo-icon.png"
               alt="Cetak.inc"
-              width={28}
-              height={28}
+              width={26}
+              height={26}
               className="object-contain"
             />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="font-extrabold text-sm sm:text-base tracking-tight">
-                Cetak<span className="text-[#00A3E0]">.</span>inc — Urang Dalam
+              <h1 className="font-extrabold text-sm sm:text-base tracking-tight text-white flex items-center gap-1">
+                <span>Cetak<span className="text-[#00A3E0]">.</span>inc</span>
+                <span className="text-slate-400 font-normal text-xs hidden sm:inline">— Urang Dalam</span>
               </h1>
-              <span className="bg-emerald-500/20 text-emerald-400 text-[9px] font-bold px-2 py-0.5 rounded-full border border-emerald-500/30">
-                LIVE DB ACTIVE
+              <span className="inline-flex items-center gap-1 bg-emerald-500/10 text-emerald-400 text-[10px] font-semibold px-2 py-0.5 rounded-full border border-emerald-500/20">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                <span className="hidden xs:inline">Supabase Live</span>
               </span>
             </div>
-            <p className="text-[10px] text-gray-400 hidden sm:block">
-              Panel Kontrol Utama & Manajemen Katalog
+            <p className="text-[10px] text-slate-400 hidden sm:block">
+              Panel Manajemen Percetakan & Kontrol Katalog
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-2 sm:gap-3">
+        <div className="flex items-center gap-1.5 sm:gap-2.5">
           <button
             onClick={refreshAllData}
-            title="Refresh Data dari Database"
-            className="p-2 bg-white/10 hover:bg-white/20 rounded-xl text-gray-300 hover:text-white transition-colors"
+            title="Refresh Data dari Database Supabase"
+            className="p-2 bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white rounded-xl border border-slate-700/60 transition-all cursor-pointer"
           >
-            <RefreshCw size={16} className={loading ? "animate-spin" : ""} />
+            <RefreshCw size={15} className={loading ? "animate-spin text-orange-400" : ""} />
           </button>
           <a
             href={process.env.NEXT_PUBLIC_STORE_URL || "https://cetakinc.vercel.app"}
             target="_blank"
             rel="noopener noreferrer"
-            className="px-3 py-1.5 bg-white/10 hover:bg-white/20 text-gray-200 text-xs font-semibold rounded-xl inline-flex items-center gap-1.5 transition-colors"
+            className="px-2.5 sm:px-3 py-1.5 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white text-xs font-semibold rounded-xl inline-flex items-center gap-1.5 shadow-xs shadow-blue-500/20 transition-all cursor-pointer"
+            title="Buka Toko Web Utama"
           >
             <ExternalLink size={13} /> <span className="hidden sm:inline">Buka Web Utama</span>
           </a>
           <button
             onClick={handleLogout}
-            className="px-3 py-1.5 bg-red-600/80 hover:bg-red-600 text-white text-xs font-semibold rounded-xl inline-flex items-center gap-1.5 transition-colors"
+            className="px-2.5 sm:px-3 py-1.5 bg-slate-800 hover:bg-red-500/20 text-slate-300 hover:text-red-400 text-xs font-semibold rounded-xl inline-flex items-center gap-1.5 border border-slate-700/60 hover:border-red-500/30 transition-all cursor-pointer"
+            title="Keluar dari Panel Admin"
           >
             <LogOut size={13} /> <span className="hidden sm:inline">Keluar</span>
           </button>
         </div>
       </header>
 
-      {/* NAVIGATION TABS RAIL */}
-      <nav className="bg-white border-b border-gray-200 px-4 sm:px-8 py-2 overflow-x-auto no-scrollbar flex gap-2">
+      {/* DESKTOP / TABLET NAVIGATION TABS RAIL */}
+      <nav className="bg-white/90 backdrop-blur-md border-b border-gray-200/80 px-3 sm:px-8 py-2 overflow-x-auto no-scrollbar flex items-center gap-1.5 sticky top-[53px] z-30 shadow-2xs">
         {[
-          { id: "products", label: `Katalog Produk (${products.length})`, icon: Package },
-          { id: "categories", label: `Kategori (${categories.length})`, icon: Layers },
-          { id: "banners", label: `Banner Promo (${banners.length})`, icon: ImageIcon },
+          { id: "products", label: "Katalog Produk", badge: products.length, icon: Package },
+          { id: "categories", label: "Kategori", badge: categories.length, icon: Layers },
+          { id: "banners", label: "Banner Promo", badge: banners.length, icon: ImageIcon },
+          { id: "orders", label: "Pesanan", badge: orders.length, icon: ShoppingCart },
           { id: "settings", label: "Pengaturan & WA", icon: Settings },
-          { id: "backup", label: "Backup & Reset", icon: Database },
+          { id: "dashboard", label: "Ringkasan", icon: LayoutDashboard },
+          { id: "backup", label: "Backup & Data", icon: Database },
           { id: "account", label: "Keamanan Akun", icon: KeyRound },
         ].map((tab) => {
           const Icon = tab.icon;
@@ -1511,21 +1517,67 @@ export default function UrangDalamAdminPortal() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
-              className={`px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap inline-flex items-center gap-2 transition-all shrink-0 ${
+              className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap inline-flex items-center gap-1.5 transition-all shrink-0 cursor-pointer ${
                 isActive
-                  ? "bg-[#0B1E36] text-white shadow-xs"
+                  ? "bg-slate-900 text-white shadow-xs"
                   : "bg-gray-100/70 hover:bg-gray-200/80 text-gray-600"
               }`}
             >
-              <Icon size={14} className={isActive ? "text-[#F97316]" : ""} />
+              <Icon size={14} className={isActive ? "text-orange-400" : "text-gray-400"} />
               <span>{tab.label}</span>
+              {tab.badge !== undefined && (
+                <span className={`text-[10px] font-bold px-1.5 py-0.2 rounded-full ${
+                  isActive ? "bg-white/20 text-white" : "bg-gray-200 text-gray-700"
+                }`}>
+                  {tab.badge}
+                </span>
+              )}
+            </button>
+          );
+        })}
+      </nav>
+
+      {/* MOBILE BOTTOM NAVIGATION BAR (Sticky for Phones) */}
+      <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-lg border-t border-gray-200/80 shadow-lg px-2 py-1.5 pb-safe flex items-center justify-around md:hidden">
+        {[
+          { id: "products", label: "Produk", icon: Package, badge: products.length },
+          { id: "categories", label: "Kategori", icon: Layers, badge: categories.length },
+          { id: "banners", label: "Banner", icon: ImageIcon, badge: banners.length },
+          { id: "orders", label: "Pesanan", icon: ShoppingCart, badge: orders.length },
+          { id: "settings", label: "Pengaturan", icon: Settings },
+        ].map((tab) => {
+          const Icon = tab.icon;
+          const isActive = activeTab === tab.id;
+          return (
+            <button
+              key={tab.id}
+              onClick={() => {
+                setActiveTab(tab.id as any);
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
+              className={`flex flex-col items-center justify-center flex-1 py-1 rounded-xl transition-all cursor-pointer relative ${
+                isActive ? "text-orange-600 font-bold" : "text-gray-500 font-medium"
+              }`}
+            >
+              <div className="relative">
+                <Icon size={19} className={isActive ? "text-orange-600 scale-110" : "text-gray-400"} />
+                {tab.badge !== undefined && tab.badge > 0 && (
+                  <span className="absolute -top-1 -right-2.5 bg-orange-500 text-white text-[8px] font-extrabold px-1 rounded-full min-w-3.5 text-center">
+                    {tab.badge}
+                  </span>
+                )}
+              </div>
+              <span className="text-[10px] mt-0.5 tracking-tight">{tab.label}</span>
+              {isActive && (
+                <span className="w-1 h-1 rounded-full bg-orange-600 mt-0.5" />
+              )}
             </button>
           );
         })}
       </nav>
 
       {/* MAIN ADMIN CONTENT CONTAINER */}
-      <main className="flex-1 p-4 sm:p-8 max-w-7xl w-full mx-auto space-y-6">
+      <main className="flex-1 p-3 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto space-y-5 pb-24 md:pb-12">
         {/* ========================================================= */}
         {/* TAB 1: DASHBOARD RINGKASAN */}
         {/* ========================================================= */}
@@ -1671,42 +1723,44 @@ export default function UrangDalamAdminPortal() {
         {activeTab === "products" && (
           <div className="space-y-4">
             {/* Status Filter Tabs */}
-            <div className="flex items-center gap-2 overflow-x-auto pb-1">
+            <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
               <button
                 onClick={() => setProductStatusFilter("all")}
-                className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 ${
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer ${
                   productStatusFilter === "all"
-                    ? "bg-[#0B1E36] text-white shadow-xs"
-                    : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-100"
+                    ? "bg-slate-900 text-white shadow-xs"
+                    : "bg-white text-gray-600 hover:bg-gray-50 border border-gray-200/80"
                 }`}
               >
                 Semua Produk ({products.length})
               </button>
               <button
                 onClick={() => setProductStatusFilter("active")}
-                className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 ${
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer inline-flex items-center gap-1.5 ${
                   productStatusFilter === "active"
                     ? "bg-emerald-600 text-white shadow-xs"
-                    : "bg-emerald-50/70 text-emerald-700 hover:bg-emerald-100/70 border border-emerald-100"
+                    : "bg-emerald-50/70 text-emerald-700 hover:bg-emerald-100/70 border border-emerald-200/60"
                 }`}
               >
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                 Aktif Publik ({products.filter((p) => p.isActive).length})
               </button>
               <button
                 onClick={() => setProductStatusFilter("inactive")}
-                className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 ${
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer inline-flex items-center gap-1.5 ${
                   productStatusFilter === "inactive"
                     ? "bg-rose-600 text-white shadow-xs"
-                    : "bg-rose-50/70 text-rose-700 hover:bg-rose-100/70 border border-rose-100"
+                    : "bg-rose-50/70 text-rose-700 hover:bg-rose-100/70 border border-rose-200/60"
                 }`}
               >
+                <span className="w-1.5 h-1.5 rounded-full bg-rose-400" />
                 Nonaktif ({products.filter((p) => !p.isActive).length})
               </button>
             </div>
 
             {/* Action Bar */}
-            <div className="bg-white p-4 rounded-3xl border border-gray-100 shadow-2xs flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between">
-              <div className="flex flex-1 gap-2">
+            <div className="bg-white p-3.5 sm:p-4 rounded-2xl sm:rounded-3xl border border-gray-200/70 shadow-xs flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between">
+              <div className="flex flex-1 flex-col sm:flex-row gap-2">
                 <div className="relative flex-1">
                   <Search size={15} className="absolute left-3.5 top-3 text-gray-400" />
                   <input
@@ -1714,13 +1768,21 @@ export default function UrangDalamAdminPortal() {
                     placeholder="Cari nama atau deskripsi produk..."
                     value={productSearch}
                     onChange={(e) => setProductSearch(e.target.value)}
-                    className="w-full pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs sm:text-sm focus:outline-none focus:border-[#F97316]"
+                    className="w-full pl-9 pr-8 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs sm:text-sm focus:outline-none focus:bg-white focus:border-orange-500 transition-colors"
                   />
+                  {productSearch && (
+                    <button
+                      onClick={() => setProductSearch("")}
+                      className="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600 p-0.5"
+                    >
+                      <X size={14} />
+                    </button>
+                  )}
                 </div>
                 <select
                   value={productCatFilter}
                   onChange={(e) => setProductCatFilter(e.target.value)}
-                  className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs sm:text-sm focus:outline-none"
+                  className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs sm:text-sm focus:outline-none focus:bg-white focus:border-orange-500 transition-colors font-medium text-gray-700 cursor-pointer"
                 >
                   <option value="Semua">Semua Kategori</option>
                   {categories.map((c) => (
@@ -1731,18 +1793,18 @@ export default function UrangDalamAdminPortal() {
                 </select>
               </div>
 
-              <div className="flex gap-2">
+              <div className="flex items-center gap-2 justify-between sm:justify-end">
                 {selectedProductIds.length > 0 && (
                   <div className="flex gap-1.5">
                     <button
                       onClick={() => handleBulkAction("activate")}
-                      className="px-3 py-2 bg-emerald-600 text-white rounded-xl text-xs font-bold"
+                      className="px-3 py-2 bg-emerald-600 text-white rounded-xl text-xs font-bold hover:bg-emerald-700 cursor-pointer"
                     >
                       Aktifkan ({selectedProductIds.length})
                     </button>
                     <button
                       onClick={() => handleBulkAction("deactivate")}
-                      className="px-3 py-2 bg-gray-600 text-white rounded-xl text-xs font-bold"
+                      className="px-3 py-2 bg-gray-600 text-white rounded-xl text-xs font-bold hover:bg-gray-700 cursor-pointer"
                     >
                       Nonaktifkan
                     </button>
@@ -1751,7 +1813,7 @@ export default function UrangDalamAdminPortal() {
                 <button
                   type="button"
                   onClick={async () => {
-                    if (!confirm("Isi atau sinkronkan katalog dengan 15 produk percetakan standar (Spanduk PxL, Stiker A3+, Brosur, Kaos DTF, Neon Box)?")) return;
+                    if (!confirm("Isi atau sinkronkan katalog dengan master produk percetakan standar?")) return;
                     try {
                       const res = await adminFetch("/api/admin/seed-printing", { method: "POST" });
                       const d = await res.json();
@@ -1766,29 +1828,30 @@ export default function UrangDalamAdminPortal() {
                       showToast("Gagal menghubungi server", "error");
                     }
                   }}
-                  className="px-3.5 py-2.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold rounded-xl text-xs sm:text-sm inline-flex items-center gap-1.5 border border-emerald-200 transition-all"
-                  title="Isi atau perbarui 15 master produk percetakan standar"
+                  className="px-3 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-semibold rounded-xl text-xs inline-flex items-center gap-1.5 border border-emerald-200/80 transition-all cursor-pointer"
+                  title="Isi master produk standar percetakan"
                 >
-                  <Sparkles size={15} /> Isi Master Cetak
+                  <Sparkles size={14} className="text-emerald-600" /> <span className="hidden sm:inline">Isi Master Cetak</span>
                 </button>
                 <button
                   onClick={openAddProductModal}
-                  className="px-4 py-2.5 bg-[#F97316] hover:bg-orange-600 text-white font-bold rounded-xl text-xs sm:text-sm inline-flex items-center gap-1.5 shadow-sm transition-all"
+                  className="px-4 py-2 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-bold rounded-xl text-xs sm:text-sm inline-flex items-center gap-1.5 shadow-sm shadow-orange-500/20 transition-all cursor-pointer"
                 >
                   <Plus size={16} /> Tambah Produk
                 </button>
               </div>
             </div>
 
-            {/* Product Table / Cards */}
-            <div className="bg-white rounded-3xl border border-gray-100 shadow-2xs overflow-hidden">
+            {/* DESKTOP PRODUCT TABLE (Hidden on Mobile) */}
+            <div className="hidden md:block bg-white rounded-3xl border border-gray-200/70 shadow-xs overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs">
-                  <thead className="bg-gray-50/80 border-b border-gray-100 text-gray-400 uppercase tracking-wider text-[10px]">
+                  <thead className="bg-gray-50/80 border-b border-gray-100 text-gray-500 font-semibold uppercase tracking-wider text-[10px]">
                     <tr>
                       <th className="p-3.5 w-10 text-center">
                         <input
                           type="checkbox"
+                          className="rounded text-orange-600 focus:ring-orange-500"
                           checked={selectedProductIds.length > 0 && selectedProductIds.length === filteredProducts.length}
                           onChange={(e) => {
                             if (e.target.checked) setSelectedProductIds(filteredProducts.map((p) => p.id));
@@ -1806,7 +1869,8 @@ export default function UrangDalamAdminPortal() {
                   <tbody className="divide-y divide-gray-100">
                     {filteredProducts.length === 0 ? (
                       <tr>
-                        <td colSpan={6} className="p-8 text-center text-gray-400">
+                        <td colSpan={6} className="p-12 text-center text-gray-400">
+                          <Package size={32} className="mx-auto mb-2 text-gray-300" />
                           Tidak ada produk yang sesuai dengan filter.
                         </td>
                       </tr>
@@ -1814,10 +1878,11 @@ export default function UrangDalamAdminPortal() {
                       filteredProducts.map((p) => {
                         const isSelected = selectedProductIds.includes(p.id);
                         return (
-                          <tr key={p.id} className="hover:bg-slate-50/50 transition-colors">
+                          <tr key={p.id} className="hover:bg-slate-50/70 transition-colors">
                             <td className="p-3.5 text-center">
                               <input
                                 type="checkbox"
+                                className="rounded text-orange-600 focus:ring-orange-500"
                                 checked={isSelected}
                                 onChange={(e) => {
                                   if (e.target.checked) setSelectedProductIds([...selectedProductIds, p.id]);
@@ -1827,7 +1892,7 @@ export default function UrangDalamAdminPortal() {
                             </td>
                             <td className="p-3.5">
                               <div className="flex items-center gap-3">
-                                <div className="relative w-12 h-12 rounded-xl bg-gray-100 overflow-hidden shrink-0 border border-gray-100">
+                                <div className="relative w-12 h-12 rounded-xl bg-gray-100 overflow-hidden shrink-0 border border-gray-200/80 shadow-2xs">
                                   <Image
                                     src={p.imageUrl || p.img || "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=800&auto=format&fit=crop"}
                                     alt={p.name || p.title}
@@ -1838,23 +1903,24 @@ export default function UrangDalamAdminPortal() {
                                   />
                                 </div>
                                 <div className="min-w-0 max-w-xs">
-                                  <div className="font-bold text-gray-900 truncate">{p.name || p.title}</div>
-                                  <div className="text-[10px] text-gray-400 truncate">{p.description || p.desc || "-"}</div>
+                                  <div className="font-bold text-gray-900 truncate text-xs sm:text-sm">{p.name || p.title}</div>
+                                  <div className="text-[11px] text-gray-400 truncate mt-0.5">{p.description || p.desc || "-"}</div>
                                   {p.isBestSeller && (
-                                    <span className="text-[9px] bg-red-100 text-red-600 font-extrabold px-1.5 py-0.2 rounded inline-block mt-0.5">
-                                      Terlaris
+                                    <span className="text-[9px] bg-amber-50 text-amber-700 font-extrabold px-1.5 py-0.2 rounded-md inline-block mt-0.5 border border-amber-200/60">
+                                      Terlaris 🔥
                                     </span>
                                   )}
                                 </div>
                               </div>
                             </td>
                             <td className="p-3.5">
-                              <span className="bg-gray-100 text-gray-700 font-medium px-2.5 py-1 rounded-full text-[10px]">
+                              <span className="bg-gray-100 text-gray-700 font-semibold px-2.5 py-1 rounded-full text-[10px] inline-block">
                                 {p.category}
                               </span>
                             </td>
-                            <td className="p-3.5 font-bold text-[#F97316]">
-                              {p.price} <span className="text-[10px] text-gray-400 font-normal">{p.unit}</span>
+                            <td className="p-3.5 font-bold text-slate-900">
+                              <span className="text-orange-600">{p.price}</span>{" "}
+                              <span className="text-[10px] text-gray-400 font-normal">{p.unit}</span>
                             </td>
                             <td className="p-3.5 text-center">
                               <button
@@ -1866,7 +1932,7 @@ export default function UrangDalamAdminPortal() {
                                     : "bg-gray-100 text-gray-500 border border-gray-200 hover:bg-gray-200"
                                 }`}
                               >
-                                <span className={`w-1.5 h-1.5 rounded-full ${p.isActive ? "bg-emerald-500" : "bg-gray-400"}`} />
+                                <span className={`w-1.5 h-1.5 rounded-full ${p.isActive ? "bg-emerald-500 animate-pulse" : "bg-gray-400"}`} />
                                 {p.isActive ? "Aktif" : "Nonaktif"}
                               </button>
                             </td>
@@ -1875,21 +1941,21 @@ export default function UrangDalamAdminPortal() {
                                 <button
                                   onClick={() => handleDuplicateProduct(p)}
                                   title="Duplikasi Produk"
-                                  className="p-1.5 hover:bg-gray-100 rounded-lg text-gray-400 hover:text-gray-700"
+                                  className="p-1.5 hover:bg-gray-100 rounded-lg text-gray-400 hover:text-gray-700 transition-colors cursor-pointer"
                                 >
                                   <Copy size={14} />
                                 </button>
                                 <button
                                   onClick={() => openEditProductModal(p)}
                                   title="Edit Produk"
-                                  className="p-1.5 hover:bg-blue-50 rounded-lg text-gray-400 hover:text-blue-600"
+                                  className="p-1.5 hover:bg-blue-50 rounded-lg text-gray-400 hover:text-blue-600 transition-colors cursor-pointer"
                                 >
                                   <Edit3 size={14} />
                                 </button>
                                 <button
                                   onClick={() => handleDeleteProduct(p.id, p.name || p.title)}
                                   title="Hapus / Nonaktifkan Produk"
-                                  className="p-1.5 hover:bg-red-50 rounded-lg text-gray-400 hover:text-red-600"
+                                  className="p-1.5 hover:bg-red-50 rounded-lg text-gray-400 hover:text-red-600 transition-colors cursor-pointer"
                                 >
                                   <Trash2 size={14} />
                                 </button>
@@ -1903,6 +1969,126 @@ export default function UrangDalamAdminPortal() {
                 </table>
               </div>
             </div>
+
+            {/* MOBILE PRODUCT CARDS (Shown on Mobile) */}
+            <div className="block md:hidden space-y-3">
+              {filteredProducts.length === 0 ? (
+                <div className="bg-white rounded-2xl p-8 text-center text-gray-400 border border-gray-200/70 shadow-xs">
+                  <Package size={32} className="mx-auto mb-2 text-gray-300" />
+                  Tidak ada produk yang sesuai dengan filter.
+                </div>
+              ) : (
+                filteredProducts.map((p) => {
+                  const isSelected = selectedProductIds.includes(p.id);
+                  return (
+                    <div
+                      key={p.id}
+                      className={`bg-white rounded-2xl p-3.5 border transition-all shadow-xs ${
+                        isSelected ? "border-orange-500/80 bg-orange-50/20" : "border-gray-200/70"
+                      }`}
+                    >
+                      <div className="flex items-start gap-3">
+                        {/* Thumbnail */}
+                        <div className="relative w-20 h-20 rounded-xl bg-gray-100 overflow-hidden shrink-0 border border-gray-100 shadow-2xs">
+                          <Image
+                            src={p.imageUrl || p.img || "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=800&auto=format&fit=crop"}
+                            alt={p.name || p.title}
+                            fill
+                            sizes="80px"
+                            unoptimized={Boolean((p.imageUrl || p.img)?.startsWith("data:"))}
+                            className="object-cover"
+                          />
+                          {p.isBestSeller && (
+                            <div className="absolute top-1 left-1 bg-amber-500 text-white text-[8px] font-extrabold px-1 rounded shadow-xs">
+                              🔥
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Content */}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between gap-1 mb-0.5">
+                            <span className="text-[10px] font-bold text-gray-500 bg-gray-100 px-2 py-0.5 rounded-md truncate max-w-[120px]">
+                              {p.category}
+                            </span>
+                            <button
+                              onClick={() => handleToggleProductStatus(p)}
+                              className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold cursor-pointer transition-all ${
+                                p.isActive
+                                  ? "bg-emerald-50 text-emerald-600 border border-emerald-200"
+                                  : "bg-gray-100 text-gray-500 border border-gray-200"
+                              }`}
+                            >
+                              <span className={`w-1.5 h-1.5 rounded-full ${p.isActive ? "bg-emerald-500" : "bg-gray-400"}`} />
+                              {p.isActive ? "Aktif" : "Nonaktif"}
+                            </button>
+                          </div>
+
+                          <h3 className="font-bold text-xs sm:text-sm text-gray-900 line-clamp-2 leading-snug">
+                            {p.name || p.title}
+                          </h3>
+
+                          <div className="mt-1 flex items-baseline gap-1">
+                            <span className="text-sm font-extrabold text-orange-600">{p.price}</span>
+                            <span className="text-[10px] text-gray-400">{p.unit}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Bottom action row */}
+                      <div className="mt-3 pt-2.5 border-t border-gray-100 flex items-center justify-between">
+                        <label className="inline-flex items-center gap-2 cursor-pointer text-xs text-gray-500 font-medium">
+                          <input
+                            type="checkbox"
+                            className="rounded text-orange-600 focus:ring-orange-500"
+                            checked={isSelected}
+                            onChange={(e) => {
+                              if (e.target.checked) setSelectedProductIds([...selectedProductIds, p.id]);
+                              else setSelectedProductIds(selectedProductIds.filter((id) => id !== p.id));
+                            }}
+                          />
+                          <span>Pilih</span>
+                        </label>
+
+                        <div className="flex items-center gap-1">
+                          <button
+                            onClick={() => handleDuplicateProduct(p)}
+                            className="p-1.5 text-gray-500 hover:text-gray-800 bg-gray-50 hover:bg-gray-100 rounded-lg text-xs font-semibold inline-flex items-center gap-1 transition-colors cursor-pointer"
+                            title="Duplikasi"
+                          >
+                            <Copy size={13} />
+                          </button>
+                          <button
+                            onClick={() => openEditProductModal(p)}
+                            className="px-2.5 py-1 text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg text-xs font-bold inline-flex items-center gap-1 transition-colors cursor-pointer"
+                          >
+                            <Edit3 size={13} /> Edit
+                          </button>
+                          <button
+                            onClick={() => handleDeleteProduct(p.id, p.name || p.title)}
+                            className="p-1.5 text-red-500 hover:text-red-700 bg-red-50 hover:bg-red-100 rounded-lg text-xs font-semibold inline-flex items-center gap-1 transition-colors cursor-pointer"
+                            title="Hapus"
+                          >
+                            <Trash2 size={13} />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+
+            {/* FLOATING ACTION BUTTON ON MOBILE (+ Tambah Produk) */}
+            <div className="fixed right-4 bottom-20 z-40 md:hidden">
+              <button
+                onClick={openAddProductModal}
+                className="w-13 h-13 rounded-full bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-lg shadow-orange-500/40 flex items-center justify-center active:scale-95 transition-transform cursor-pointer"
+                aria-label="Tambah Produk"
+              >
+                <Plus size={24} strokeWidth={2.5} />
+              </button>
+            </div>
           </div>
         )}
 
@@ -1911,50 +2097,52 @@ export default function UrangDalamAdminPortal() {
         {/* ========================================================= */}
         {activeTab === "categories" && (
           <div className="space-y-4">
-            <div className="flex items-center justify-between">
+            <div className="bg-white p-4 sm:p-5 rounded-2xl sm:rounded-3xl border border-gray-200/70 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
               <div>
-                <h2 className="font-extrabold text-base text-gray-900">Kategori Produk</h2>
-                <p className="text-xs text-gray-500">
-                  Kategori mengelompokkan checklist produk branding & merchandise di web.
+                <h2 className="font-extrabold text-base sm:text-lg text-slate-900">Kategori Produk</h2>
+                <p className="text-xs text-gray-500 mt-0.5">
+                  Kelola kategori untuk mengelompokkan produk di web utama ({categories.length} Kategori aktif).
                 </p>
               </div>
               <button
                 onClick={openAddCategoryModal}
-                className="px-4 py-2 bg-[#F97316] text-white font-bold rounded-xl text-xs inline-flex items-center gap-1.5"
+                className="px-4 py-2 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-bold rounded-xl text-xs sm:text-sm inline-flex items-center gap-1.5 shadow-sm shadow-orange-500/20 transition-all cursor-pointer"
               >
-                <Plus size={14} /> Tambah Kategori
+                <Plus size={15} /> Tambah Kategori
               </button>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
               {categories.map((c) => (
                 <div
                   key={c.id}
-                  className="bg-white p-5 rounded-3xl border border-gray-100 shadow-2xs flex flex-col justify-between"
+                  className="bg-white p-4 sm:p-5 rounded-2xl border border-gray-200/70 shadow-xs hover:shadow-md transition-all flex flex-col justify-between group"
                 >
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <span className="text-[10px] text-gray-400 font-mono">#{c.sortOrder || 1}</span>
-                      <h3 className="font-bold text-sm text-gray-900 mt-0.5">{c.name}</h3>
-                      <p className="text-[10px] text-gray-400">Slug: {c.slug}</p>
+                  <div>
+                    <div className="flex items-start justify-between gap-2">
+                      <span className="text-[10px] text-gray-500 font-mono bg-gray-100 px-2 py-0.5 rounded-md font-bold">
+                        #{c.sortOrder || 1}
+                      </span>
+                      <span className="bg-orange-50 text-orange-600 text-xs font-bold px-2.5 py-0.5 rounded-full border border-orange-200/60">
+                        {c.productCount || 0} Produk
+                      </span>
                     </div>
-                    <span className="bg-orange-50 text-[#F97316] text-xs font-bold px-2.5 py-1 rounded-full">
-                      {c.productCount || 0} Produk
-                    </span>
+                    <h3 className="font-bold text-sm sm:text-base text-slate-900 mt-2">{c.name}</h3>
+                    <p className="text-[11px] text-gray-400 font-mono mt-0.5">/{c.slug}</p>
                   </div>
 
-                  <div className="flex justify-end gap-2 mt-4 pt-3 border-t border-gray-100">
+                  <div className="flex justify-end gap-1.5 mt-4 pt-3 border-t border-gray-100">
                     <button
                       onClick={() => openEditCategoryModal(c)}
-                      className="px-3 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold rounded-lg"
+                      className="px-3 py-1.5 bg-gray-50 hover:bg-gray-100 text-gray-700 text-xs font-semibold rounded-lg inline-flex items-center gap-1 transition-colors cursor-pointer"
                     >
-                      Edit
+                      <Edit3 size={13} /> Edit
                     </button>
                     <button
                       onClick={() => handleDeleteCategory(c.id, c.name)}
-                      className="px-3 py-1 bg-red-50 hover:bg-red-100 text-red-600 text-xs font-bold rounded-lg"
+                      className="px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 text-xs font-semibold rounded-lg inline-flex items-center gap-1 transition-colors cursor-pointer"
                     >
-                      Hapus
+                      <Trash2 size={13} /> Hapus
                     </button>
                   </div>
                 </div>
@@ -1995,10 +2183,11 @@ export default function UrangDalamAdminPortal() {
               </div>
             </div>
 
-            <div className="bg-white rounded-3xl border border-gray-100 shadow-2xs overflow-hidden">
+            {/* DESKTOP ORDERS TABLE (Hidden on Mobile) */}
+            <div className="hidden md:block bg-white rounded-3xl border border-gray-200/70 shadow-xs overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs">
-                  <thead className="bg-gray-50 text-gray-400 uppercase text-[10px]">
+                  <thead className="bg-gray-50/80 text-gray-500 font-semibold uppercase text-[10px] border-b border-gray-100">
                     <tr>
                       <th className="p-3.5">Kode Pesanan</th>
                       <th className="p-3.5">Tanggal</th>
@@ -2012,14 +2201,15 @@ export default function UrangDalamAdminPortal() {
                   <tbody className="divide-y divide-gray-100">
                     {filteredOrders.length === 0 ? (
                       <tr>
-                        <td colSpan={7} className="p-8 text-center text-gray-400">
+                        <td colSpan={7} className="p-12 text-center text-gray-400">
+                          <ShoppingCart size={32} className="mx-auto mb-2 text-gray-300" />
                           Tidak ada pesanan yang sesuai filter.
                         </td>
                       </tr>
                     ) : (
                       filteredOrders.map((o) => (
-                        <tr key={o.id} className="hover:bg-slate-50 transition-colors">
-                          <td className="p-3.5 font-bold text-gray-900">{o.code}</td>
+                        <tr key={o.id} className="hover:bg-slate-50/70 transition-colors">
+                          <td className="p-3.5 font-bold text-gray-900 font-mono">{o.code}</td>
                           <td className="p-3.5 text-gray-500">
                             {new Date(o.createdAt).toLocaleString("id-ID", {
                               day: "numeric",
@@ -2040,7 +2230,7 @@ export default function UrangDalamAdminPortal() {
                               <select
                                 value={o.hub_id || (o.address?.toLowerCase().includes("lubuk buaya") ? "00000000-0000-0000-0000-000000000002" : "00000000-0000-0000-0000-000000000001")}
                                 onChange={(e) => handleAssignHubToOrder(o.id, e.target.value)}
-                                className="text-[9px] font-bold bg-orange-50 text-[#F97316] border border-orange-200 rounded px-1 py-0.5"
+                                className="text-[9px] font-bold bg-orange-50 text-[#F97316] border border-orange-200 rounded px-1 py-0.5 cursor-pointer"
                                 title="Ubah Alokasi Workshop Hub untuk pesanan ini"
                               >
                                 <option value="00000000-0000-0000-0000-000000000001">Hub Pusat Padang</option>
@@ -2055,7 +2245,7 @@ export default function UrangDalamAdminPortal() {
                             <select
                               value={o.status}
                               onChange={(e) => handleUpdateOrderStatus(o.id, e.target.value)}
-                              className={`px-2.5 py-1 rounded-full text-[10px] font-extrabold border transition-all ${
+                              className={`px-2.5 py-1 rounded-full text-[10px] font-extrabold border transition-all cursor-pointer ${
                                 o.status === "BARU"
                                   ? "bg-blue-50 text-blue-600 border-blue-200"
                                   : o.status === "DIPROSES"
@@ -2092,7 +2282,7 @@ export default function UrangDalamAdminPortal() {
                                     });
                                   }
                                 }}
-                                className="flex items-center gap-1 text-[9px] text-violet-700 hover:text-violet-900 mt-1 font-bold bg-violet-50 hover:bg-violet-100 px-2 py-0.5 rounded-md border border-violet-200 transition-all text-left"
+                                className="flex items-center gap-1 text-[9px] text-violet-700 hover:text-violet-900 mt-1 font-bold bg-violet-50 hover:bg-violet-100 px-2 py-0.5 rounded-md border border-violet-200 transition-all text-left cursor-pointer"
                                 title="Klik untuk edit data kurir"
                               >
                                 <Bike size={11} className="shrink-0" />
@@ -2124,7 +2314,7 @@ export default function UrangDalamAdminPortal() {
                               </a>
                               <button
                                 onClick={() => setSelectedOrder(o)}
-                                className="px-2.5 py-1 bg-gray-100 hover:bg-gray-200 rounded-lg text-xs font-bold transition-colors"
+                                className="px-2.5 py-1 bg-gray-100 hover:bg-gray-200 rounded-lg text-xs font-bold transition-colors cursor-pointer"
                               >
                                 Rincian
                               </button>
@@ -2137,6 +2327,89 @@ export default function UrangDalamAdminPortal() {
                 </table>
               </div>
             </div>
+
+            {/* MOBILE ORDERS CARDS (Shown on Mobile) */}
+            <div className="block md:hidden space-y-3">
+              {filteredOrders.length === 0 ? (
+                <div className="bg-white rounded-2xl p-8 text-center text-gray-400 border border-gray-200/70 shadow-xs">
+                  <ShoppingCart size={32} className="mx-auto mb-2 text-gray-300" />
+                  Tidak ada pesanan yang sesuai filter.
+                </div>
+              ) : (
+                filteredOrders.map((o) => (
+                  <div key={o.id} className="bg-white rounded-2xl p-4 border border-gray-200/70 shadow-xs space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="font-extrabold text-xs text-slate-900 bg-gray-100 px-2.5 py-1 rounded-lg font-mono">
+                        {o.code}
+                      </span>
+                      <select
+                        value={o.status}
+                        onChange={(e) => handleUpdateOrderStatus(o.id, e.target.value)}
+                        className={`px-2.5 py-1 rounded-full text-[10px] font-extrabold border transition-all cursor-pointer ${
+                          o.status === "BARU"
+                            ? "bg-blue-50 text-blue-600 border-blue-200"
+                            : o.status === "DIPROSES"
+                            ? "bg-amber-50 text-amber-600 border-amber-200"
+                            : o.status === "SIAP"
+                            ? "bg-purple-50 text-purple-600 border-purple-200"
+                            : o.status === "DIKIRIM" || o.status === "SHIPPED"
+                            ? "bg-violet-100 text-violet-800 border-violet-300 ring-1 ring-violet-300 font-black animate-pulse"
+                            : o.status === "SELESAI"
+                            ? "bg-emerald-50 text-emerald-600 border-emerald-200"
+                            : "bg-red-50 text-red-600 border-red-200"
+                        }`}
+                      >
+                        <option value="BARU">BARU</option>
+                        <option value="DIPROSES">DIPROSES</option>
+                        <option value="SIAP">SIAP</option>
+                        <option value="DIKIRIM">DIKIRIM</option>
+                        <option value="SELESAI">SELESAI</option>
+                        <option value="BATAL">BATAL</option>
+                      </select>
+                    </div>
+
+                    <div className="flex items-start justify-between gap-2">
+                      <div>
+                        <div className="font-bold text-sm text-gray-900">{o.customerName}</div>
+                        <div className="text-[11px] text-gray-500 mt-0.5">{o.customerPhone}</div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-xs font-bold text-orange-600">Rp {Number(o.subtotal).toLocaleString("id-ID")}</div>
+                        <div className="text-[10px] text-gray-400 mt-0.5">
+                          {new Date(o.createdAt).toLocaleDateString("id-ID", { day: "numeric", month: "short" })}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="text-[11px] text-gray-500 bg-gray-50 p-2.5 rounded-xl flex items-center justify-between">
+                      <span>{o.deliveryMethod === "kirim" ? "🚚 Kirim Alamat" : "🏬 Ambil Workshop"}</span>
+                      <span className="text-[10px] text-gray-400">{o.paymentMethod}</span>
+                    </div>
+
+                    <div className="flex items-center justify-end gap-2 pt-1 border-t border-gray-100">
+                      {o.customerPhone && (
+                        <a
+                          href={`https://wa.me/${String(o.customerPhone).replace(/[^0-9]/g, "")}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-xl text-xs font-bold inline-flex items-center gap-1 border border-emerald-200/60"
+                        >
+                          <Phone size={13} /> Chat WA
+                        </a>
+                      )}
+                      <button
+                        onClick={() => setSelectedOrder(o)}
+                        className="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl text-xs font-bold"
+                      >
+                        Rincian
+                      </button>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+              </div>
+            </div>
           </div>
         )}
 
@@ -2145,31 +2418,31 @@ export default function UrangDalamAdminPortal() {
         {/* ========================================================= */}
         {activeTab === "banners" && (
           <div className="space-y-4">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-white p-5 rounded-3xl border border-gray-100 shadow-2xs">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-white p-4 sm:p-5 rounded-2xl sm:rounded-3xl border border-gray-200/70 shadow-xs">
               <div>
-                <h2 className="font-extrabold text-base text-gray-900">Banner Promo & Flash Sale</h2>
-                <p className="text-xs text-gray-500">
-                  Kelola banner promosi dan penawaran kilat yang tampil di halaman beranda (mobile touch swipe & desktop).
+                <h2 className="font-extrabold text-base sm:text-lg text-slate-900">Banner Promo & Slider Beranda</h2>
+                <p className="text-xs text-gray-500 mt-0.5">
+                  Kelola banner promosi dan penawaran kilat yang tampil di carousel otomatis halaman beranda web utama.
                 </p>
               </div>
               <button
                 type="button"
                 onClick={openAddBannerModal}
-                className="px-4 py-2 bg-[#F97316] text-white font-bold rounded-xl text-xs inline-flex items-center gap-1.5 shadow-sm hover:bg-orange-600 transition-colors cursor-pointer"
+                className="px-4 py-2 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-bold rounded-xl text-xs sm:text-sm inline-flex items-center gap-1.5 shadow-sm shadow-orange-500/20 transition-all cursor-pointer"
               >
-                <Plus size={14} /> Tambah Banner Baru
+                <Plus size={15} /> Tambah Banner Baru
               </button>
             </div>
 
             {banners.length === 0 ? (
-              <div className="bg-white rounded-3xl p-12 text-center border border-gray-100 shadow-2xs">
+              <div className="bg-white rounded-2xl sm:rounded-3xl p-12 text-center border border-gray-200/70 shadow-xs">
                 <ImageIcon size={40} className="mx-auto text-gray-300 mb-3" />
                 <h3 className="font-bold text-sm text-gray-700">Belum Ada Banner Promo</h3>
                 <p className="text-xs text-gray-400 mt-1">Tambahkan banner promosi pertama Anda untuk memikat calon pembeli.</p>
                 <button
                   type="button"
                   onClick={openAddBannerModal}
-                  className="mt-4 px-4 py-2 bg-[#F97316] text-white font-bold rounded-xl text-xs inline-flex items-center gap-1.5 shadow-sm cursor-pointer"
+                  className="mt-4 px-4 py-2 bg-gradient-to-r from-orange-500 to-amber-500 text-white font-bold rounded-xl text-xs inline-flex items-center gap-1.5 shadow-sm cursor-pointer"
                 >
                   <Plus size={14} /> Buat Banner Sekarang
                 </button>
@@ -2182,11 +2455,11 @@ export default function UrangDalamAdminPortal() {
                   return (
                     <div
                       key={b.id}
-                      className="bg-white rounded-3xl border border-gray-100 shadow-2xs overflow-hidden flex flex-col justify-between"
+                      className="bg-white rounded-2xl border border-gray-200/70 shadow-xs hover:shadow-md transition-all overflow-hidden flex flex-col justify-between group"
                     >
                       <div>
                         {/* Image Preview */}
-                        <div className="relative aspect-16/9 bg-gray-100 overflow-hidden group">
+                        <div className="relative aspect-16/9 bg-gray-100 overflow-hidden">
                           {imgUrl ? (
                             <Image
                               src={imgUrl}
@@ -2202,16 +2475,17 @@ export default function UrangDalamAdminPortal() {
                             </div>
                           )}
                           <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5">
-                            <span className="bg-black/60 backdrop-blur-xs text-white text-[10px] font-mono px-2 py-0.5 rounded-lg">
+                            <span className="bg-slate-900/80 backdrop-blur-xs text-white text-[10px] font-mono px-2 py-0.5 rounded-lg font-bold">
                               #{b.sortOrder || b.sort_order || 1}
                             </span>
                             <span
-                              className={`text-[10px] font-bold px-2 py-0.5 rounded-lg backdrop-blur-xs ${
+                              className={`text-[10px] font-bold px-2 py-0.5 rounded-lg backdrop-blur-xs inline-flex items-center gap-1 ${
                                 isActive
                                   ? "bg-emerald-600/90 text-white"
-                                  : "bg-gray-800/80 text-gray-300"
+                                  : "bg-slate-800/80 text-gray-300"
                               }`}
                             >
+                              <span className={`w-1.5 h-1.5 rounded-full ${isActive ? "bg-emerald-300 animate-pulse" : "bg-gray-400"}`} />
                               {isActive ? "Aktif Publik" : "Nonaktif"}
                             </span>
                           </div>
@@ -2219,13 +2493,13 @@ export default function UrangDalamAdminPortal() {
 
                         {/* Content */}
                         <div className="p-4 space-y-2">
-                          <h3 className="font-bold text-sm text-[#0B1E36] line-clamp-1">{b.title}</h3>
+                          <h3 className="font-bold text-sm sm:text-base text-slate-900 line-clamp-1">{b.title}</h3>
                           {b.subtitle && (
                             <p className="text-xs text-gray-500 line-clamp-2 leading-relaxed">{b.subtitle}</p>
                           )}
                           <div className="pt-2 flex items-center justify-between text-[11px] text-gray-400 border-t border-gray-100">
-                            <span>Tombol: <strong>{b.ctaLabel || b.cta_label || "Buka"}</strong></span>
-                            <span className="truncate max-w-[150px] font-mono text-[10px]">{b.ctaHref || b.cta_href || "/produk"}</span>
+                            <span>Tombol: <strong className="text-gray-700">{b.ctaLabel || b.cta_label || "Buka"}</strong></span>
+                            <span className="truncate max-w-[150px] font-mono text-[10px] text-gray-500">{b.ctaHref || b.cta_href || "/produk"}</span>
                           </div>
                         </div>
                       </div>
@@ -2237,8 +2511,8 @@ export default function UrangDalamAdminPortal() {
                           onClick={() => handleToggleBannerStatus(b)}
                           className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-colors cursor-pointer ${
                             isActive
-                              ? "bg-amber-50 hover:bg-amber-100 text-amber-700"
-                              : "bg-emerald-50 hover:bg-emerald-100 text-emerald-700"
+                              ? "bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200/60"
+                              : "bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200/60"
                           }`}
                         >
                           {isActive ? "Nonaktifkan" : "Aktifkan"}
@@ -2247,18 +2521,18 @@ export default function UrangDalamAdminPortal() {
                           <button
                             type="button"
                             onClick={() => openEditBannerModal(b)}
-                            className="p-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl transition-colors cursor-pointer"
+                            className="p-2 bg-gray-50 hover:bg-gray-100 text-gray-700 rounded-xl transition-colors cursor-pointer border border-gray-200/60"
                             title="Edit Banner"
                           >
-                            <Edit3 size={14} />
+                            <Edit3 size={13} />
                           </button>
                           <button
                             type="button"
                             onClick={() => handleDeleteBanner(b.id, b.title)}
-                            className="p-2 bg-red-50 hover:bg-red-100 text-red-600 rounded-xl transition-colors cursor-pointer"
+                            className="p-2 bg-red-50 hover:bg-red-100 text-red-600 rounded-xl transition-colors cursor-pointer border border-red-200/60"
                             title="Hapus Banner"
                           >
-                            <Trash2 size={14} />
+                            <Trash2 size={13} />
                           </button>
                         </div>
                       </div>
@@ -2274,11 +2548,23 @@ export default function UrangDalamAdminPortal() {
         {/* TAB 5: PENGATURAN & WA TEMPLATE */}
         {/* ========================================================= */}
         {activeTab === "settings" && (
-          <form onSubmit={handleSaveSettings} className="space-y-6">
-            <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-2xs space-y-4">
-              <h2 className="font-extrabold text-base text-[#0B1E36] pb-2 border-b border-gray-100">
-                Kontak & Lokasi Workshop Padang
-              </h2>
+          <form onSubmit={handleSaveSettings} className="space-y-5">
+            {/* WhatsApp & Kontak Panel */}
+            <div className="bg-white p-5 sm:p-6 rounded-2xl sm:rounded-3xl border border-gray-200/70 shadow-xs space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-gray-100">
+                <div>
+                  <h2 className="font-extrabold text-base sm:text-lg text-slate-900">
+                    Kontak WhatsApp & Pemesanan
+                  </h2>
+                  <p className="text-xs text-gray-500 mt-0.5">
+                    Pengaturan nomor penerima pesanan pelanggan yang terhubung langsung ke web utama.
+                  </p>
+                </div>
+                <span className="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-700 text-xs font-semibold px-3 py-1 rounded-full border border-emerald-200/80 w-fit">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                  Terhubung ke cetakinc.vercel.app
+                </span>
+              </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
@@ -2288,13 +2574,13 @@ export default function UrangDalamAdminPortal() {
                   <input
                     type="text"
                     required
-                    placeholder="Contoh: 6281234567890"
+                    placeholder="Contoh: 6282172725267"
                     value={settings["contact.whatsapp"] || ""}
                     onChange={(e) => setSettings({ ...settings, "contact.whatsapp": e.target.value })}
-                    className="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs sm:text-sm"
+                    className="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 focus:outline-none focus:bg-white focus:border-orange-500 transition-colors"
                   />
-                  <p className="text-[10px] text-gray-400 mt-1">
-                    Semua pesanan keranjang & tombol kontak akan otomatis mengarah ke nomor ini.
+                  <p className="text-[11px] text-gray-500 mt-1">
+                    Semua pesanan produk dan tombol chat konsultasi di web utama otomatis mengirim pesan WhatsApp ke nomor ini.
                   </p>
                 </div>
 
@@ -2304,33 +2590,23 @@ export default function UrangDalamAdminPortal() {
                   </label>
                   <input
                     type="email"
+                    placeholder="hello@basadvertising.com"
                     value={settings["contact.email"] || ""}
                     onChange={(e) => setSettings({ ...settings, "contact.email": e.target.value })}
-                    className="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs sm:text-sm"
+                    className="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs sm:text-sm focus:outline-none focus:bg-white focus:border-orange-500 transition-colors"
                   />
                 </div>
 
                 <div className="md:col-span-2">
                   <label className="block text-xs font-bold text-gray-700 mb-1">
-                    Alamat Workshop Cetak
+                    Alamat Workshop Percetakan
                   </label>
                   <input
                     type="text"
+                    placeholder="Jl. Percetakan Modern No.88, Kota Padang, Sumatera Barat"
                     value={settings["contact.address"] || ""}
                     onChange={(e) => setSettings({ ...settings, "contact.address": e.target.value })}
-                    className="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs sm:text-sm"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold text-gray-700 mb-1">
-                    Label Lokasi Header
-                  </label>
-                  <input
-                    type="text"
-                    value={settings["location.chipLabel"] || ""}
-                    onChange={(e) => setSettings({ ...settings, "location.chipLabel": e.target.value })}
-                    className="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs sm:text-sm"
+                    className="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs sm:text-sm focus:outline-none focus:bg-white focus:border-orange-500 transition-colors"
                   />
                 </div>
 
@@ -2340,34 +2616,50 @@ export default function UrangDalamAdminPortal() {
                   </label>
                   <input
                     type="text"
+                    placeholder="Senin - Sabtu: 08:30 - 21:00 WIB"
                     value={settings["contact.hours"] || ""}
                     onChange={(e) => setSettings({ ...settings, "contact.hours": e.target.value })}
-                    className="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs sm:text-sm"
+                    className="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs sm:text-sm focus:outline-none focus:bg-white focus:border-orange-500 transition-colors"
                   />
                 </div>
               </div>
             </div>
 
-            {/* Template Pesan WA */}
-            <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-2xs space-y-4">
-              <h2 className="font-extrabold text-base text-[#0B1E36] pb-2 border-b border-gray-100">
+            {/* Template Pesan WA Panel */}
+            <div className="bg-white p-5 sm:p-6 rounded-2xl sm:rounded-3xl border border-gray-200/70 shadow-xs space-y-3">
+              <h2 className="font-extrabold text-base sm:text-lg text-slate-900 pb-2 border-b border-gray-100">
                 Template Format Pesanan WhatsApp
               </h2>
               <p className="text-xs text-gray-500">
-                Gunakan tag: <code>{'{code}'}</code>, <code>{'{nama}'}</code>, <code>{'{phone}'}</code>, <code>{'{metode}'}</code>, <code>{'{alamat}'}</code>, <code>{'{pembayaran}'}</code>, <code>{'{catatan}'}</code>, <code>{'{items}'}</code>, <code>{'{total}'}</code>.
+                Klik tag berikut untuk menyisipkannya ke template:
               </p>
+              <div className="flex flex-wrap gap-1.5 pb-1">
+                {["{code}", "{nama}", "{phone}", "{metode}", "{alamat}", "{pembayaran}", "{catatan}", "{items}", "{total}"].map((tag) => (
+                  <button
+                    key={tag}
+                    type="button"
+                    onClick={() => {
+                      const cur = settings["checkout.waTemplate"] || "";
+                      setSettings({ ...settings, "checkout.waTemplate": cur + (cur ? " " : "") + tag });
+                    }}
+                    className="px-2 py-1 bg-gray-100 hover:bg-orange-50 hover:text-orange-600 border border-gray-200 rounded-lg text-xs font-mono font-bold transition-colors cursor-pointer"
+                  >
+                    + {tag}
+                  </button>
+                ))}
+              </div>
               <textarea
                 rows={8}
                 value={settings["checkout.waTemplate"] || ""}
                 onChange={(e) => setSettings({ ...settings, "checkout.waTemplate": e.target.value })}
-                className="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs font-mono"
+                className="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs font-mono focus:outline-none focus:bg-white focus:border-orange-500 transition-colors"
               />
             </div>
 
             <div className="flex justify-end">
               <button
                 type="submit"
-                className="px-6 py-3 bg-[#F97316] hover:bg-orange-600 text-white font-bold rounded-2xl text-xs sm:text-sm shadow-md transition-all"
+                className="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-bold rounded-2xl text-xs sm:text-sm shadow-md shadow-orange-500/20 transition-all cursor-pointer"
               >
                 Simpan & Terapkan Pengaturan
               </button>
@@ -3281,13 +3573,24 @@ export default function UrangDalamAdminPortal() {
       {/* MODAL: TAMBAH / EDIT PRODUK */}
       {/* ========================================================= */}
       {isProdModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-xs overflow-y-auto">
-          <div className="bg-white rounded-3xl max-w-2xl w-full max-h-[92dvh] overflow-y-auto shadow-2xl border border-gray-100 flex flex-col my-auto">
-            <div className="p-4 sm:p-5 border-b border-gray-100 flex items-center justify-between sticky top-0 bg-white z-10">
-              <h2 className="font-extrabold text-sm sm:text-base text-gray-900">
-                {prodModalMode === "add" ? "Tambah Produk Baru" : "Edit Produk"}
-              </h2>
-              <button onClick={() => setIsProdModalOpen(false)} className="p-1 text-gray-400 hover:text-gray-700">
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-900/60 backdrop-blur-md overflow-y-auto">
+          <div className="bg-white rounded-t-3xl sm:rounded-3xl max-w-2xl w-full max-h-[92dvh] overflow-y-auto shadow-2xl border border-gray-100 flex flex-col my-auto">
+            {/* Mobile Drag Indicator */}
+            <div className="w-12 h-1.5 bg-gray-200 rounded-full mx-auto sm:hidden mt-2.5 shrink-0" />
+
+            <div className="p-4 sm:p-5 border-b border-gray-100 flex items-center justify-between sticky top-0 bg-white/95 backdrop-blur-sm z-10">
+              <div>
+                <h2 className="font-extrabold text-base sm:text-lg text-slate-900">
+                  {prodModalMode === "add" ? "Tambah Produk Baru" : "Edit Detail Produk"}
+                </h2>
+                <p className="text-[11px] text-gray-500 mt-0.5">
+                  Perubahan langsung terhubung dan tersimpan ke database live Supabase.
+                </p>
+              </div>
+              <button
+                onClick={() => setIsProdModalOpen(false)}
+                className="p-1.5 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-xl transition-colors cursor-pointer"
+              >
                 <X size={18} />
               </button>
             </div>
@@ -3298,10 +3601,10 @@ export default function UrangDalamAdminPortal() {
                 <input
                   type="text"
                   required
-                  placeholder="Contoh: Paper Cup Panas 8oz Double Wall"
+                  placeholder="Contoh: Spanduk Flexi Korea 440g (Higres Tebal)"
                   value={prodForm.name}
                   onChange={(e) => setProdForm({ ...prodForm, name: e.target.value })}
-                  className="w-full px-3.5 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs sm:text-sm"
+                  className="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 focus:outline-none focus:bg-white focus:border-orange-500 transition-colors"
                 />
               </div>
 
@@ -3311,7 +3614,7 @@ export default function UrangDalamAdminPortal() {
                   <select
                     value={prodForm.categoryId}
                     onChange={(e) => setProdForm({ ...prodForm, categoryId: e.target.value })}
-                    className="w-full px-3.5 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs sm:text-sm"
+                    className="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs sm:text-sm font-medium text-slate-800 focus:outline-none focus:bg-white focus:border-orange-500 transition-colors cursor-pointer"
                   >
                     {categories.map((c) => (
                       <option key={c.id} value={c.id}>
@@ -3327,8 +3630,8 @@ export default function UrangDalamAdminPortal() {
                     type="text"
                     value={prodForm.unit}
                     onChange={(e) => setProdForm({ ...prodForm, unit: e.target.value })}
-                    placeholder="/ pcs, / box, / rim..."
-                    className="w-full px-3.5 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs sm:text-sm"
+                    placeholder="/ pcs, / box, / rim, / meter..."
+                    className="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs sm:text-sm focus:outline-none focus:bg-white focus:border-orange-500 transition-colors"
                   />
                 </div>
               </div>
@@ -3342,7 +3645,7 @@ export default function UrangDalamAdminPortal() {
                     min="0"
                     value={prodForm.price || ""}
                     onChange={(e) => setProdForm({ ...prodForm, price: parseInt(e.target.value) || 0 })}
-                    className="w-full px-3.5 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs sm:text-sm font-bold text-[#F97316]"
+                    className="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs sm:text-sm font-bold text-orange-600 focus:outline-none focus:bg-white focus:border-orange-500 transition-colors"
                   />
                 </div>
 
@@ -3351,10 +3654,10 @@ export default function UrangDalamAdminPortal() {
                   <input
                     type="number"
                     min="0"
-                    placeholder="Kosongkan jika tidak promo"
+                    placeholder="Kosongkan jika tidak ada diskon"
                     value={prodForm.compareAtPrice}
                     onChange={(e) => setProdForm({ ...prodForm, compareAtPrice: e.target.value })}
-                    className="w-full px-3.5 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs sm:text-sm text-gray-500"
+                    className="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs sm:text-sm text-gray-500 focus:outline-none focus:bg-white focus:border-orange-500 transition-colors"
                   />
                 </div>
               </div>
@@ -3364,7 +3667,7 @@ export default function UrangDalamAdminPortal() {
                 <label className="block text-xs font-bold text-gray-700 mb-1">Foto / URL Gambar Produk *</label>
                 <div className="flex gap-2 items-center">
                   {prodForm.imageUrl ? (
-                    <div className="relative w-10 h-10 rounded-xl overflow-hidden bg-gray-100 border border-gray-200 shrink-0">
+                    <div className="relative w-11 h-11 rounded-xl overflow-hidden bg-gray-100 border border-gray-200 shrink-0 shadow-2xs">
                       <Image
                         src={prodForm.imageUrl}
                         alt="Preview"
@@ -3379,8 +3682,8 @@ export default function UrangDalamAdminPortal() {
                     required
                     value={prodForm.imageUrl}
                     onChange={(e) => setProdForm({ ...prodForm, imageUrl: e.target.value })}
-                    placeholder="Masukkan URL gambar atau klik Upload Foto..."
-                    className="flex-1 px-3.5 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs"
+                    placeholder="Masukkan URL foto atau klik tombol upload..."
+                    className="flex-1 px-3.5 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs focus:outline-none focus:bg-white focus:border-orange-500 transition-colors"
                   />
                   <input
                     type="file"
@@ -3393,7 +3696,7 @@ export default function UrangDalamAdminPortal() {
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
                     disabled={uploadingImage}
-                    className="px-3.5 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold rounded-xl inline-flex items-center gap-1 shrink-0"
+                    className="px-3.5 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold rounded-xl inline-flex items-center gap-1.5 shrink-0 transition-colors cursor-pointer border border-gray-200"
                   >
                     <Upload size={14} /> {uploadingImage ? "Mengunggah..." : "Upload Foto"}
                   </button>
@@ -3406,7 +3709,8 @@ export default function UrangDalamAdminPortal() {
                   rows={2}
                   value={prodForm.description}
                   onChange={(e) => setProdForm({ ...prodForm, description: e.target.value })}
-                  className="w-full px-3.5 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs"
+                  placeholder="Ringkasan spesifikasi atau kegunaan produk..."
+                  className="w-full px-3.5 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs focus:outline-none focus:bg-white focus:border-orange-500 transition-colors"
                 />
               </div>
 
@@ -3419,43 +3723,60 @@ export default function UrangDalamAdminPortal() {
                   value={prodForm.specsText}
                   onChange={(e) => setProdForm({ ...prodForm, specsText: e.target.value })}
                   placeholder="Bahan Kraft Food Grade&#10;Tahan Panas & Bocor&#10;Bisa Custom Sablon Full Color"
-                  className="w-full px-3.5 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs font-mono"
+                  className="w-full px-3.5 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs font-mono focus:outline-none focus:bg-white focus:border-orange-500 transition-colors"
                 />
               </div>
 
-              <div className="flex items-center gap-6 pt-2">
-                <label className="flex items-center gap-2 cursor-pointer text-xs font-bold">
-                  <input
-                    type="checkbox"
-                    checked={prodForm.isBestSeller}
-                    onChange={(e) => setProdForm({ ...prodForm, isBestSeller: e.target.checked })}
-                    className="rounded text-[#F97316]"
-                  />
-                  <span>Tandai sebagai Best Seller 🔥</span>
-                </label>
+              {/* Toggles for Best Seller and Active */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                <div
+                  onClick={() => setProdForm({ ...prodForm, isBestSeller: !prodForm.isBestSeller })}
+                  className="flex items-center justify-between p-3 bg-gray-50 hover:bg-gray-100/80 rounded-2xl border border-gray-200/60 cursor-pointer transition-colors"
+                >
+                  <span className="text-xs font-bold text-gray-800">Tandai sebagai Best Seller 🔥</span>
+                  <div
+                    className={`relative inline-flex h-6 w-11 shrink-0 rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out ${
+                      prodForm.isBestSeller ? "bg-amber-500" : "bg-gray-200"
+                    }`}
+                  >
+                    <span
+                      className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out ${
+                        prodForm.isBestSeller ? "translate-x-5" : "translate-x-0"
+                      }`}
+                    />
+                  </div>
+                </div>
 
-                <label className="flex items-center gap-2 cursor-pointer text-xs font-bold">
-                  <input
-                    type="checkbox"
-                    checked={prodForm.isActive}
-                    onChange={(e) => setProdForm({ ...prodForm, isActive: e.target.checked })}
-                    className="rounded text-[#F97316]"
-                  />
-                  <span>Produk Aktif Tayang</span>
-                </label>
+                <div
+                  onClick={() => setProdForm({ ...prodForm, isActive: !prodForm.isActive })}
+                  className="flex items-center justify-between p-3 bg-gray-50 hover:bg-gray-100/80 rounded-2xl border border-gray-200/60 cursor-pointer transition-colors"
+                >
+                  <span className="text-xs font-bold text-gray-800">Produk Aktif Tayang di Web</span>
+                  <div
+                    className={`relative inline-flex h-6 w-11 shrink-0 rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out ${
+                      prodForm.isActive ? "bg-emerald-500" : "bg-gray-200"
+                    }`}
+                  >
+                    <span
+                      className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out ${
+                        prodForm.isActive ? "translate-x-5" : "translate-x-0"
+                      }`}
+                    />
+                  </div>
+                </div>
               </div>
 
-              <div className="flex justify-end gap-2 pt-4 border-t border-gray-100">
+              <div className="flex justify-end gap-2 pt-4 border-t border-gray-100 sticky bottom-0 bg-white/95 backdrop-blur-sm py-2">
                 <button
                   type="button"
                   onClick={() => setIsProdModalOpen(false)}
-                  className="px-4 py-2 border border-gray-200 text-gray-600 rounded-xl text-xs font-bold"
+                  className="px-4 py-2 border border-gray-200 text-gray-600 rounded-xl text-xs font-bold hover:bg-gray-50 transition-colors cursor-pointer"
                 >
                   Batal
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 bg-[#F97316] text-white rounded-xl text-xs font-bold shadow-sm"
+                  className="px-5 py-2 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white rounded-xl text-xs font-bold shadow-sm shadow-orange-500/20 transition-all cursor-pointer"
                 >
                   {prodModalMode === "add" ? "Tambahkan ke Katalog" : "Simpan Perubahan"}
                 </button>
