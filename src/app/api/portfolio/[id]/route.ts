@@ -5,6 +5,7 @@ import { requireAdmin } from "@/lib/auth/guard";
 import { revalidateEntity } from "@/lib/cache-tags";
 import { logAudit } from "@/lib/db/queries/audit";
 import { deleteStorageFile } from "@/lib/storage-helper";
+import { triggerRemoteStoreRevalidation } from "@/lib/revalidate-remote";
 
 export async function GET(
   request: Request,
@@ -74,6 +75,7 @@ export async function PUT(
     });
 
     revalidateEntity("portfolio");
+    triggerRemoteStoreRevalidation();
 
     return NextResponse.json({
       success: true,
@@ -120,6 +122,7 @@ export async function DELETE(
     });
 
     revalidateEntity("portfolio");
+    triggerRemoteStoreRevalidation();
 
     return NextResponse.json({ success: true, message: "Item inspirasi berhasil dihapus" });
   } catch (error: any) {

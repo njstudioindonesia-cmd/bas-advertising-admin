@@ -3,6 +3,7 @@ import { getSettings, setMultipleSettings } from "@/lib/db/queries/settings";
 import { requireAdmin } from "@/lib/auth/guard";
 import { revalidateEntity } from "@/lib/cache-tags";
 import { logAudit } from "@/lib/db/queries/audit";
+import { triggerRemoteStoreRevalidation } from "@/lib/revalidate-remote";
 
 export async function GET() {
   try {
@@ -33,6 +34,7 @@ export async function PUT(request: Request) {
     });
 
     revalidateEntity("settings", ["/", "/produk", "/keranjang", "/about", "/hubungi"]);
+    triggerRemoteStoreRevalidation();
 
     const updated = await getSettings();
     return NextResponse.json({ success: true, message: "Pengaturan berhasil diperbarui", data: updated });

@@ -4,6 +4,7 @@ import { CategoryInputSchema } from "@/lib/validators";
 import { requireAdmin } from "@/lib/auth/guard";
 import { revalidateEntity } from "@/lib/cache-tags";
 import { logAudit } from "@/lib/db/queries/audit";
+import { triggerRemoteStoreRevalidation } from "@/lib/revalidate-remote";
 
 export async function GET(
   request: Request,
@@ -54,6 +55,7 @@ export async function PUT(
     });
 
     revalidateEntity("categories");
+    triggerRemoteStoreRevalidation();
 
     return NextResponse.json({ success: true, message: "Kategori berhasil diperbarui", data: updated });
   } catch (error: any) {
@@ -89,6 +91,7 @@ export async function DELETE(
     });
 
     revalidateEntity("categories");
+    triggerRemoteStoreRevalidation();
 
     return NextResponse.json({ success: true, message: "Kategori berhasil dihapus" });
   } catch (error: any) {

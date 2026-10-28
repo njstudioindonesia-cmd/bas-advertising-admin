@@ -5,6 +5,7 @@ import { requireAdmin } from "@/lib/auth/guard";
 import { revalidateEntity } from "@/lib/cache-tags";
 import { logAudit } from "@/lib/db/queries/audit";
 import { deleteStorageFile } from "@/lib/storage-helper";
+import { triggerRemoteStoreRevalidation } from "@/lib/revalidate-remote";
 
 export async function GET(
   request: Request,
@@ -65,6 +66,7 @@ export async function PUT(
     });
 
     revalidateEntity("banners");
+    triggerRemoteStoreRevalidation();
 
     return NextResponse.json({ success: true, message: "Banner berhasil diperbarui", data: updated });
   } catch (error: any) {
@@ -102,6 +104,7 @@ export async function DELETE(
     });
 
     revalidateEntity("banners");
+    triggerRemoteStoreRevalidation();
 
     return NextResponse.json({ success: true, message: "Banner berhasil dihapus" });
   } catch (error: any) {

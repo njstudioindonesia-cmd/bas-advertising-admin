@@ -251,7 +251,7 @@ export default function UrangDalamAdminPortal() {
       headers,
       credentials: "include",
     });
-    if (res.status === 401 && url.includes("/api/auth/me")) {
+    if (res.status === 401 && !url.includes("/api/auth/me") && !url.includes("/api/auth/login")) {
       showToast("Sesi login telah berakhir. Silakan login kembali.", "error");
       if (typeof window !== "undefined") {
         localStorage.removeItem("bas_admin_token");
@@ -1703,6 +1703,7 @@ export default function UrangDalamAdminPortal() {
           { id: "categories", label: "Kategori", badge: categories.length, icon: Layers },
           { id: "portfolio", label: "Inspirasi Cetak", badge: portfolio.length, icon: Sparkles },
           { id: "banners", label: "Banner Promo", badge: banners.length, icon: ImageIcon },
+          { id: "hubs", label: "Titik Workshop", badge: hubsList.length, icon: Building2 },
           { id: "settings", label: "Pengaturan & WA", icon: Settings },
           { id: "dashboard", label: "Ringkasan Toko", icon: LayoutDashboard },
           { id: "backup", label: "Backup & Data", icon: Database },

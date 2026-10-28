@@ -4,6 +4,7 @@ import { PortfolioInputSchema } from "@/lib/validators";
 import { requireAdmin } from "@/lib/auth/guard";
 import { revalidateEntity } from "@/lib/cache-tags";
 import { logAudit } from "@/lib/db/queries/audit";
+import { triggerRemoteStoreRevalidation } from "@/lib/revalidate-remote";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -63,6 +64,7 @@ export async function POST(request: Request) {
     });
 
     revalidateEntity("portfolio");
+    triggerRemoteStoreRevalidation();
 
     return NextResponse.json(
       { success: true, message: "Inspirasi hasil cetak berhasil ditambahkan", data: created },
