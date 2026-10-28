@@ -190,6 +190,22 @@ export default function UrangDalamAdminPortal() {
   const [uploadingBannerImage, setUploadingBannerImage] = useState(false);
   const bannerFileInputRef = useRef<HTMLInputElement>(null);
 
+  // Portfolio modal
+  const [isPortfolioModalOpen, setIsPortfolioModalOpen] = useState(false);
+  const [portfolioModalMode, setPortfolioModalMode] = useState<"add" | "edit">("add");
+  const [editingPortfolioId, setEditingPortfolioId] = useState<string | null>(null);
+  const [portfolioForm, setPortfolioForm] = useState({
+    title: "",
+    client: "",
+    category: "Packaging",
+    imageUrl: "https://images.unsplash.com/photo-1589939705384-5185137a7f0f?q=80&w=800",
+    description: "",
+    sortOrder: 1,
+    isActive: true,
+  });
+  const [uploadingPortfolioImage, setUploadingPortfolioImage] = useState(false);
+  const portfolioFileInputRef = useRef<HTMLInputElement>(null);
+
   // Order modal / detail
   const [selectedOrder, setSelectedOrder] = useState<any | null>(null);
   const [orderStatusFilter, setOrderStatusFilter] = useState("Semua");
@@ -273,7 +289,7 @@ export default function UrangDalamAdminPortal() {
         }
       };
 
-      const [pRes, cRes, bRes, sRes, oRes, hRes, tarRes, payRes] = await Promise.all([
+      const [pRes, cRes, bRes, sRes, oRes, hRes, tarRes, payRes, portRes] = await Promise.all([
         safeFetch("/api/products?includeInactive=true"),
         safeFetch("/api/categories?includeInactive=true"),
         safeFetch("/api/banners?includeInactive=true"),
@@ -282,6 +298,7 @@ export default function UrangDalamAdminPortal() {
         safeFetch("/api/admin/hubs"),
         safeFetch("/api/admin/tariffs"),
         safeFetch("/api/admin/payments"),
+        safeFetch("/api/portfolio?includeInactive=true"),
       ]);
 
       if (pRes.success) setProducts(pRes.data);
@@ -292,6 +309,7 @@ export default function UrangDalamAdminPortal() {
         }
       }
       if (bRes.success) setBanners(bRes.data);
+      if (portRes && portRes.success) setPortfolio(portRes.data);
       if (sRes.success) setSettings(sRes.data);
       if (oRes.success) setOrders(oRes.data);
       if (hRes && hRes.success) setHubsList(hRes.data);
@@ -1116,6 +1134,185 @@ export default function UrangDalamAdminPortal() {
   };
 
   // ==========================================
+  // PORTFOLIO / INSPIRASI HASIL CETAK ACTIONS
+  // ==========================================
+  const openAddPortfolioModal = () => {
+    setPortfolioModalMode("add");
+    setEditingPortfolioId(null);
+    setPortfolioForm({
+      title: "",
+      client: "",
+      category: "Packaging",
+      imageUrl: "https://images.unsplash.com/photo-1589939705384-5185137a7f0f?q=80&w=800",
+      description: "",
+      sortOrder: portfolio.length + 1,
+      isActive: true,
+    });
+    setIsPortfolioModalOpen(true);
+  };
+
+  const openEditPortfolioModal = (item: any) => {
+    setPortfolioModalMode("edit");
+    setEditingPortfolioId(item.id);
+    setPortfolioForm({
+      title: item.title || "",
+      client: item.client || "",
+      category: item.category || "Packaging",
+      imageUrl: item.imageUrl || item.image_url || "",
+      description: item.description || "",
+      sortOrder: item.sortOrder || item.sort_order || 1,
+      isActive: item.isActive !== undefined ? item.isActive : Boolean(item.is_active),
+    });
+    setIsPortfolioModalOpen(true);
+  };
+
+  const handlePortfolioFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingPortfolioImage(true);
+    const fd = new FormData();
+    fd.append("file", file);
+    fd.append("folder", "portfolio");
+
+    try {
+      const res = await adminFetch("/api/upload", {
+        method: "POST",
+        body: fd,
+      });
+      const data = await res.json();
+      if (data.success && data.url) {
+        setPortfolioForm((prev) => ({ ...prev, imageUrl: data.url }));
+        showToast(
+          data.savingsPercent
+            ? `Foto inspirasi dioptimasi & diunggah (Hemat ${data.savingsPercent}%)`
+            : "Foto inspirasi berhasil diunggah",
+          "success"
+        );
+      } else {
+        showToast(data.error || "Gagal upload gambar portofolio", "error");
+      }
+    } catch {
+      showToast("Gagal upload gambar portofolio ke server", "error");
+    } finally {
+      setUploadingPortfolioImage(false);
+    }
+  };
+
+  const handlePortfolioSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!portfolioForm.title.trim()) {
+      showToast("Judul inspirasi cetak wajib diisi", "error");
+      return;
+    }
+    if (!portfolioForm.imageUrl.trim()) {
+      showToast("Foto / Gambar inspirasi cetak wajib diisi", "error");
+      return;
+    }
+
+    const payload = {
+      title: portfolioForm.title.trim(),
+      client: portfolioForm.client.trim() || null,
+      category: portfolioForm.category.trim() || "All Work",
+      imageUrl: portfolioForm.imageUrl.trim(),
+      description: portfolioForm.description.trim() || null,
+      sortOrder: Number(portfolioForm.sortOrder) || 0,
+      isActive: Boolean(portfolioForm.isActive),
+    };
+
+    try {
+      if (portfolioModalMode === "add") {
+        const res = await adminFetch("/api/portfolio", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        const data = await res.json();
+        if (data.success) {
+          showToast("Inspirasi hasil cetak berhasil ditambahkan", "success");
+          setIsPortfolioModalOpen(false);
+          if (data.data) {
+            setPortfolio((prev) => [...prev, data.data]);
+          }
+          notifyProductCatalogUpdated();
+          refreshAllData();
+        } else {
+          showToast(data.error || "Gagal menambah inspirasi cetak", "error");
+        }
+      } else {
+        const res = await adminFetch(`/api/portfolio/${editingPortfolioId}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        const data = await res.json();
+        if (data.success) {
+          showToast("Inspirasi hasil cetak berhasil diperbarui", "success");
+          setIsPortfolioModalOpen(false);
+          if (data.data) {
+            setPortfolio((prev) => prev.map((p) => p.id === editingPortfolioId ? data.data : p));
+          }
+          notifyProductCatalogUpdated();
+          refreshAllData();
+        } else {
+          showToast(data.error || "Gagal mengupdate inspirasi cetak", "error");
+        }
+      }
+    } catch {
+      showToast("Terjadi kesalahan saat menyimpan inspirasi cetak", "error");
+    }
+  };
+
+  const handleTogglePortfolioStatus = async (item: any) => {
+    const currentStatus = item.isActive !== undefined ? item.isActive : Boolean(item.is_active);
+    const newStatus = !currentStatus;
+    setPortfolio((prev) =>
+      prev.map((p) => (p.id === item.id ? { ...p, isActive: newStatus, is_active: newStatus ? 1 : 0 } : p))
+    );
+    try {
+      const res = await adminFetch(`/api/portfolio/${item.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ isActive: newStatus }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast(`Inspirasi '${item.title}' ${newStatus ? "diaktifkan" : "dinonaktifkan"}`, "success");
+        notifyProductCatalogUpdated();
+        refreshAllData();
+      } else {
+        showToast(data.error || "Gagal mengubah status inspirasi", "error");
+        refreshAllData();
+      }
+    } catch {
+      showToast("Terjadi kesalahan koneksi", "error");
+      refreshAllData();
+    }
+  };
+
+  const handleDeletePortfolio = async (id: string, title: string) => {
+    if (!confirm(`Hapus inspirasi hasil cetak '${title}'?`)) return;
+    try {
+      setPortfolio((prev) => prev.filter((p) => p.id !== id));
+      const res = await adminFetch(`/api/portfolio/${id}`, {
+        method: "DELETE",
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast(`Inspirasi '${title}' berhasil dihapus`, "success");
+        notifyProductCatalogUpdated();
+        refreshAllData();
+      } else {
+        showToast(data.error || "Gagal menghapus inspirasi", "error");
+        refreshAllData();
+      }
+    } catch {
+      showToast("Gagal menghapus inspirasi cetak", "error");
+      refreshAllData();
+    }
+  };
+
+  // ==========================================
   // SETTINGS ACTIONS
   // ==========================================
   const handleSaveSettings = async (e: React.FormEvent) => {
@@ -1504,6 +1701,7 @@ export default function UrangDalamAdminPortal() {
         {[
           { id: "products", label: "Katalog Produk", badge: products.length, icon: Package },
           { id: "categories", label: "Kategori", badge: categories.length, icon: Layers },
+          { id: "portfolio", label: "Inspirasi Cetak", badge: portfolio.length, icon: Sparkles },
           { id: "banners", label: "Banner Promo", badge: banners.length, icon: ImageIcon },
           { id: "settings", label: "Pengaturan & WA", icon: Settings },
           { id: "dashboard", label: "Ringkasan Toko", icon: LayoutDashboard },
@@ -1541,9 +1739,9 @@ export default function UrangDalamAdminPortal() {
         {[
           { id: "products", label: "Produk", icon: Package },
           { id: "categories", label: "Kategori", icon: Layers },
+          { id: "portfolio", label: "Inspirasi", icon: Sparkles },
           { id: "banners", label: "Banner", icon: ImageIcon },
           { id: "settings", label: "Pengaturan", icon: Settings },
-          { id: "dashboard", label: "Ringkasan", icon: LayoutDashboard },
         ].map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -1652,6 +1850,12 @@ export default function UrangDalamAdminPortal() {
                     className="w-full p-3 bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold rounded-2xl text-xs flex items-center gap-2 transition-colors cursor-pointer"
                   >
                     <ImageIcon size={16} /> Atur Banner Promo Beranda
+                  </button>
+                  <button
+                    onClick={() => setActiveTab("portfolio")}
+                    className="w-full p-3 bg-purple-50 hover:bg-purple-100 text-purple-700 font-bold rounded-2xl text-xs flex items-center gap-2 transition-colors cursor-pointer"
+                  >
+                    <Sparkles size={16} /> Atur Inspirasi Hasil Cetak ({portfolio.length})
                   </button>
                   <button
                     onClick={() => setActiveTab("settings")}
@@ -2283,6 +2487,152 @@ export default function UrangDalamAdminPortal() {
                             onClick={() => handleDeleteBanner(b.id, b.title)}
                             className="p-2 bg-red-50 hover:bg-red-100 text-red-600 rounded-xl transition-colors cursor-pointer border border-red-200/60"
                             title="Hapus Banner"
+                          >
+                            <Trash2 size={13} />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ========================================================= */}
+        {/* TAB: INSPIRASI HASIL CETAK (PORTFOLIO LOOKBOOK) */}
+        {/* ========================================================= */}
+        {activeTab === "portfolio" && (
+          <div className="space-y-4">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-white p-4 sm:p-5 rounded-2xl sm:rounded-3xl border border-gray-200/70 shadow-xs">
+              <div>
+                <div className="flex items-center gap-2">
+                  <h2 className="font-extrabold text-base sm:text-lg text-slate-900">Inspirasi Hasil Cetak</h2>
+                  <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-orange-100 text-orange-700">
+                    {portfolio.length} Item
+                  </span>
+                </div>
+                <p className="text-xs text-gray-500 mt-0.5">
+                  Kelola galeri lookbook visual hasil cetak yang tampil di carousel halaman utama toko.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={openAddPortfolioModal}
+                className="px-4 py-2 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-bold rounded-xl text-xs sm:text-sm inline-flex items-center gap-1.5 shadow-sm shadow-orange-500/20 transition-all cursor-pointer"
+              >
+                <Plus size={15} /> Tambah Inspirasi Baru
+              </button>
+            </div>
+
+            {portfolio.length === 0 ? (
+              <div className="bg-white rounded-2xl sm:rounded-3xl p-12 text-center border border-gray-200/70 shadow-xs">
+                <Sparkles size={40} className="mx-auto text-amber-400 mb-3" />
+                <h3 className="font-bold text-sm text-gray-700">Belum Ada Inspirasi Hasil Cetak</h3>
+                <p className="text-xs text-gray-400 mt-1 max-w-sm mx-auto">
+                  Tambahkan foto portofolio cetak pertama Anda untuk menginspirasi calon pelanggan di beranda.
+                </p>
+                <button
+                  type="button"
+                  onClick={openAddPortfolioModal}
+                  className="mt-4 px-4 py-2 bg-gradient-to-r from-orange-500 to-amber-500 text-white font-bold rounded-xl text-xs inline-flex items-center gap-1.5 shadow-sm cursor-pointer"
+                >
+                  <Plus size={14} /> Buat Inspirasi Sekarang
+                </button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {portfolio.map((item) => {
+                  const isActive = item.isActive !== undefined ? item.isActive : Boolean(item.is_active);
+                  const imgUrl = item.imageUrl || item.image_url;
+                  return (
+                    <div
+                      key={item.id}
+                      className="bg-white rounded-2xl border border-gray-200/70 shadow-xs hover:shadow-md transition-all overflow-hidden flex flex-col justify-between group"
+                    >
+                      <div>
+                        {/* Image Preview */}
+                        <div className="relative aspect-4/3 bg-gray-100 overflow-hidden">
+                          {imgUrl ? (
+                            <Image
+                              src={imgUrl}
+                              alt={item.title}
+                              fill
+                              sizes="(max-width: 768px) 100vw, 33vw"
+                              unoptimized={Boolean(imgUrl.startsWith("data:"))}
+                              className="object-cover group-hover:scale-105 transition-transform duration-300"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-gray-400">
+                              <ImageIcon size={32} />
+                            </div>
+                          )}
+                          <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5">
+                            <span className="bg-slate-900/80 backdrop-blur-xs text-white text-[10px] font-mono px-2 py-0.5 rounded-lg font-bold">
+                              #{item.sortOrder || item.sort_order || 1}
+                            </span>
+                            <span
+                              className={`text-[10px] font-bold px-2 py-0.5 rounded-lg backdrop-blur-xs inline-flex items-center gap-1 ${
+                                isActive
+                                  ? "bg-emerald-600/90 text-white"
+                                  : "bg-slate-800/80 text-gray-300"
+                              }`}
+                            >
+                              <span className={`w-1.5 h-1.5 rounded-full ${isActive ? "bg-emerald-300 animate-pulse" : "bg-gray-400"}`} />
+                              {isActive ? "Aktif Publik" : "Nonaktif"}
+                            </span>
+                          </div>
+                          {item.category && (
+                            <div className="absolute bottom-2.5 left-2.5">
+                              <span className="bg-black/60 backdrop-blur-xs text-emerald-300 text-[10px] font-bold px-2 py-0.5 rounded-lg uppercase tracking-wider">
+                                {item.category}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Content */}
+                        <div className="p-4 space-y-1.5">
+                          <h3 className="font-bold text-sm sm:text-base text-slate-900 line-clamp-1">{item.title}</h3>
+                          {item.client && (
+                            <p className="text-xs font-semibold text-orange-600 line-clamp-1 flex items-center gap-1">
+                              <span>Klien:</span> {item.client}
+                            </p>
+                          )}
+                          {item.description && (
+                            <p className="text-xs text-gray-500 line-clamp-2 leading-relaxed">{item.description}</p>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Actions */}
+                      <div className="p-4 pt-0 flex items-center justify-between gap-2 border-t border-gray-50 mt-2">
+                        <button
+                          type="button"
+                          onClick={() => handleTogglePortfolioStatus(item)}
+                          className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-colors cursor-pointer ${
+                            isActive
+                              ? "bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200/60"
+                              : "bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200/60"
+                          }`}
+                        >
+                          {isActive ? "Nonaktifkan" : "Aktifkan"}
+                        </button>
+                        <div className="flex gap-1.5">
+                          <button
+                            type="button"
+                            onClick={() => openEditPortfolioModal(item)}
+                            className="p-2 bg-gray-50 hover:bg-gray-100 text-gray-700 rounded-xl transition-colors cursor-pointer border border-gray-200/60"
+                            title="Edit Inspirasi"
+                          >
+                            <Edit3 size={13} />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleDeletePortfolio(item.id, item.title)}
+                            className="p-2 bg-red-50 hover:bg-red-100 text-red-600 rounded-xl transition-colors cursor-pointer border border-red-200/60"
+                            title="Hapus Inspirasi"
                           >
                             <Trash2 size={13} />
                           </button>
@@ -4229,6 +4579,174 @@ export default function UrangDalamAdminPortal() {
                   className="px-4 py-2 bg-[#F97316] text-white rounded-xl text-xs font-bold shadow-sm hover:bg-orange-600 transition-colors cursor-pointer"
                 >
                   Simpan Banner Promo
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================= */}
+      {/* MODAL: TAMBAH / EDIT INSPIRASI HASIL CETAK */}
+      {/* ========================================================= */}
+      {isPortfolioModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+          <div className="bg-white rounded-3xl max-w-lg w-full p-5 sm:p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-3 border-b border-gray-100">
+              <div className="flex items-center gap-2">
+                <Sparkles size={18} className="text-[#F97316]" />
+                <h3 className="font-extrabold text-sm sm:text-base text-gray-900">
+                  {portfolioModalMode === "add" ? "Tambah Inspirasi Cetak Baru" : "Edit Inspirasi Hasil Cetak"}
+                </h3>
+              </div>
+              <button onClick={() => setIsPortfolioModalOpen(false)} className="p-1 text-gray-400 hover:text-gray-700">
+                <X size={18} />
+              </button>
+            </div>
+
+            <form onSubmit={handlePortfolioSubmit} className="space-y-3.5">
+              <div>
+                <label className="block text-xs font-bold text-gray-700 mb-1">Judul Inspirasi / Hasil Cetak *</label>
+                <input
+                  type="text"
+                  required
+                  value={portfolioForm.title}
+                  onChange={(e) => setPortfolioForm({ ...portfolioForm, title: e.target.value })}
+                  placeholder="Contoh: Coffee & Cafe Packaging Collection"
+                  className="w-full px-3.5 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs sm:text-sm"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-gray-700 mb-1">Kategori / Tag Layanan *</label>
+                <div className="flex flex-wrap gap-1.5 mb-2">
+                  {["Packaging", "Signage", "Stationery", "Event & Banner", "Apparel & Merch", "Stiker & Label"].map((cat) => (
+                    <button
+                      key={cat}
+                      type="button"
+                      onClick={() => setPortfolioForm({ ...portfolioForm, category: cat })}
+                      className={`text-[10px] font-bold px-2 py-1 rounded-lg border transition-all ${
+                        portfolioForm.category === cat
+                          ? "bg-orange-50 border-orange-300 text-orange-700"
+                          : "bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100"
+                      }`}
+                    >
+                      {cat}
+                    </button>
+                  ))}
+                </div>
+                <input
+                  type="text"
+                  required
+                  value={portfolioForm.category}
+                  onChange={(e) => setPortfolioForm({ ...portfolioForm, category: e.target.value })}
+                  placeholder="Pilih atau ketik kategori baru..."
+                  className="w-full px-3.5 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs sm:text-sm"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-gray-700 mb-1">Klien / Nama Brand (Opsional)</label>
+                  <input
+                    type="text"
+                    value={portfolioForm.client}
+                    onChange={(e) => setPortfolioForm({ ...portfolioForm, client: e.target.value })}
+                    placeholder="Contoh: Kopi Janji Padang"
+                    className="w-full px-3.5 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs sm:text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-gray-700 mb-1">Deskripsi Singkat (Opsional)</label>
+                  <input
+                    type="text"
+                    value={portfolioForm.description}
+                    onChange={(e) => setPortfolioForm({ ...portfolioForm, description: e.target.value })}
+                    placeholder="Contoh: Standing pouch ziplock & cup hot/cold"
+                    className="w-full px-3.5 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs sm:text-sm"
+                  />
+                </div>
+              </div>
+
+              {/* Upload Foto Inspirasi */}
+              <div>
+                <label className="block text-xs font-bold text-gray-700 mb-1">Foto Portofolio Cetak *</label>
+                <div className="space-y-2">
+                  {portfolioForm.imageUrl && (
+                    <div className="relative aspect-4/3 max-h-[180px] rounded-2xl overflow-hidden bg-gray-100 border border-gray-200 shadow-2xs">
+                      <Image
+                        src={portfolioForm.imageUrl}
+                        alt="Preview Foto Inspirasi"
+                        fill
+                        unoptimized={portfolioForm.imageUrl.startsWith("data:")}
+                        className="object-cover"
+                      />
+                    </div>
+                  )}
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      required
+                      value={portfolioForm.imageUrl}
+                      onChange={(e) => setPortfolioForm({ ...portfolioForm, imageUrl: e.target.value })}
+                      placeholder="Masukkan URL foto atau klik Upload..."
+                      className="flex-1 px-3.5 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs"
+                    />
+                    <input
+                      type="file"
+                      ref={portfolioFileInputRef}
+                      onChange={handlePortfolioFileUpload}
+                      accept="image/*"
+                      className="hidden"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => portfolioFileInputRef.current?.click()}
+                      disabled={uploadingPortfolioImage}
+                      className="px-3.5 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold rounded-xl inline-flex items-center gap-1 shrink-0 cursor-pointer"
+                    >
+                      <Upload size={14} /> {uploadingPortfolioImage ? "Mengunggah..." : "Upload Foto"}
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-gray-700 mb-1">Urutan Tampil (Angka)</label>
+                  <input
+                    type="number"
+                    value={portfolioForm.sortOrder}
+                    onChange={(e) => setPortfolioForm({ ...portfolioForm, sortOrder: parseInt(e.target.value) || 0 })}
+                    className="w-full px-3.5 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs sm:text-sm"
+                  />
+                </div>
+                <div className="flex items-center pt-5">
+                  <label className="inline-flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={portfolioForm.isActive}
+                      onChange={(e) => setPortfolioForm({ ...portfolioForm, isActive: e.target.checked })}
+                      className="w-4 h-4 text-[#F97316] rounded-md border-gray-300 focus:ring-[#F97316]"
+                    />
+                    <span className="text-xs font-bold text-gray-700">Tampilkan di Beranda</span>
+                  </label>
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-2 pt-3 border-t border-gray-100">
+                <button
+                  type="button"
+                  onClick={() => setIsPortfolioModalOpen(false)}
+                  className="px-4 py-2 border border-gray-200 text-gray-600 rounded-xl text-xs font-bold cursor-pointer"
+                >
+                  Batal
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-[#F97316] text-white rounded-xl text-xs font-bold shadow-sm hover:bg-orange-600 transition-colors cursor-pointer"
+                >
+                  {portfolioModalMode === "add" ? "Tambahkan Inspirasi" : "Simpan Perubahan"}
                 </button>
               </div>
             </form>
