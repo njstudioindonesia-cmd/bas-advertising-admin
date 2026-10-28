@@ -2408,8 +2408,6 @@ export default function UrangDalamAdminPortal() {
                 ))
               )}
             </div>
-              </div>
-            </div>
           </div>
         )}
 
