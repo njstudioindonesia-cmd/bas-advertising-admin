@@ -1499,8 +1499,8 @@ export default function UrangDalamAdminPortal() {
         </div>
       </header>
 
-      {/* DESKTOP / TABLET NAVIGATION TABS RAIL */}
-      <nav className="bg-white/90 backdrop-blur-md border-b border-gray-200/80 px-3 sm:px-8 py-2 overflow-x-auto no-scrollbar flex items-center gap-1.5 sticky top-[53px] z-30 shadow-2xs">
+      {/* DESKTOP / TABLET NAVIGATION TABS RAIL (Hidden on mobile because mobile uses bottom navigation bar) */}
+      <nav className="hidden md:flex bg-white/90 backdrop-blur-md border-b border-gray-200/80 px-3 sm:px-8 py-2 overflow-x-auto no-scrollbar items-center gap-1.5 sticky top-[53px] z-30 shadow-2xs">
         {[
           { id: "products", label: "Katalog Produk", badge: products.length, icon: Package },
           { id: "categories", label: "Kategori", badge: categories.length, icon: Layers },
